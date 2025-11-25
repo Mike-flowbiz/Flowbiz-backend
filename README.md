@@ -1,36 +1,226 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FlowBiz - Business Management Platform
 
-## Getting Started
+> A comprehensive business management platform with invoicing, timesheets, expenses tracking, and client portal.
 
-First, run the development server:
+## 🚀 Project Status
+
+**Current Phase:** Milestone 1 - Week 1 ✅ **COMPLETED**
+
+**Database:** ✅ Connected & Configured  
+**Backend API:** ✅ Configured & Ready  
+**Frontend:** ✅ Layouts & Routing Complete
+
+---
+
+## 📊 Database Connection
+
+**Status:** ✅ Connected to Prisma Postgres
+
+**Tables Created:** 8 tables
+- ✅ Users (with role-based access)
+- ✅ Clients
+- ✅ Products & Services
+- ✅ Invoices & Invoice Items
+- ✅ Timesheets
+- ✅ Expenses
+- ✅ Business Settings
+
+### View Your Database
+
+Prisma Studio is running at: **http://localhost:51212**
+
+Use Prisma Studio to visually inspect and manage your database.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS
+- **Database:** PostgreSQL + Prisma ORM
+- **Authentication:** JWT + bcrypt (to be implemented)
+- **Storage:** AWS S3 (to be configured)
+- **Deployment:** Vercel (frontend) + Railway/Render (backend)
+
+---
+
+## 🗓️ Development Milestones
+
+### ✅ Week 1 - Project Setup **COMPLETED**
+- [x] Next.js project setup
+- [x] PostgreSQL + Prisma configuration
+- [x] Database schema initialization
+- [x] Node.js + Express backend setup
+- [x] AWS S3 configuration
+- [x] Base layouts & routing
+- [x] CI/CD pipeline configuration
+
+### 📅 Week 2 - Authentication & User Roles
+- JWT login/register
+- bcrypt password hashing
+- Protected routes + middleware
+- Role-based access (admin, contractor, client)
+
+### 📅 Week 3 - Dashboard & Analytics
+- Revenue metrics APIs
+- Activities feed
+- Monthly revenue graph
+- Dashboard UI with charts
+
+### 📅 Week 4 - Clients Module
+- Client CRUD operations
+- Search & validation
+- Frontend listing + modals
+
+### 📅 Week 5 - Products/Services & Business Settings
+- Products/Services CRUD
+- VAT settings
+- Company info management
+- Logo upload (S3)
+
+### 📅 Week 6 - Invoicing System Core
+- Create/Edit/Delete invoices
+- Auto invoice numbering
+- VAT calculations
+- Invoice builder UI
+
+### 📅 Week 7 - PDF Generation & Storage
+- Server-side PDF generation
+- S3 file upload
+- Branded templates
+
+### 📅 Week 8 - Timesheets & Expenses
+- Timer + manual entries
+- Receipt uploads
+- Categories & filtering
+
+### 📅 Week 9 - Email & Client Portal
+- Invoice notifications
+- Password reset
+- Client portal access
+
+### 📅 Week 10 - Testing & Deployment
+- QA & bug fixes
+- Performance optimization
+- Production deployment
+
+---
+
+## 🚀 Getting Started
+
+### Install Dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env` file with:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+DATABASE_URL="your-postgresql-connection-string"
+JWT_SECRET="your-jwt-secret"
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+AWS_REGION=""
+AWS_S3_BUCKET=""
+```
 
-## Learn More
+### Run Development Servers
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Run both frontend and backend together
+npm run dev:all
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Or run separately:
+npm run dev          # Frontend only (port 3000)
+npm run dev:backend  # Backend API only (port 5000)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend API: [http://localhost:5000/api](http://localhost:5000/api)
 
-## Deploy on Vercel
+### Database Commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# View database in Prisma Studio
+npx prisma studio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Push schema changes to database
+npx prisma db push
+
+# Generate Prisma Client
+npx prisma generate
+
+# Create migration
+npx prisma migrate dev --name your-migration-name
+```
+
+---
+
+## 📁 Project Structure
+
+```
+FlowBiz/
+├── src/
+│   ├── app/              # Next.js App Router
+│   ├── lib/              # Utilities & Prisma Client
+│   └── generated/        # Generated Prisma types
+├── prisma/
+│   ├── schema.prisma     # Database schema
+│   └── migrations/       # Database migrations
+├── public/               # Static assets
+└── package.json
+```
+
+---
+
+## 🔐 Database Schema Overview
+
+### User Roles
+- **ADMIN** - Full system access
+- **CONTRACTOR** - Create invoices, track time/expenses
+- **CLIENT** - View own invoices (portal access)
+
+### Core Features
+- Multi-user support with role-based access
+- Client management with contact details
+- Products/Services catalog
+- Invoice generation with VAT calculations
+- Time tracking (timer + manual entries)
+- Expense tracking with receipt uploads
+- Business settings & branding
+
+---
+
+## 📝 Next Steps - Milestone 2 (Week 2)
+
+Ready to start Milestone 2:
+
+1. ✅ **Milestone 1 Complete!**
+2. 🎯 Implement JWT authentication
+3. 🎯 Add bcrypt password hashing
+4. 🎯 Create protected route middleware
+5. 🎯 Build login/register UI
+6. 🎯 Implement role-based access control
+
+---
+
+## 💰 Project Budget
+
+**Total:** £2,800 over 10 weeks (£280/milestone)
+
+---
+
+---
+
+## 📖 Additional Documentation
+
+- `MILESTONE_1_COMPLETE.md` - Week 1 completion summary
+- `MILESTONE_1_SUMMARY.md` - Detailed milestone breakdown
+- `CONTRIBUTING.md` - Contribution guidelines
+- `KNOWN_ISSUES.md` - Known issues and workarounds
+
+---
+
+**Built with ❤️ for efficient business management**
