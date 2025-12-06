@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,15 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { register, user } = useAuth();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +36,21 @@ export default function RegisterPage() {
       return;
     }
 
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // TODO: Implement registration API call in Milestone 2
-      console.log('Register:', formData);
-      setError('Registration functionality will be implemented in Milestone 2');
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+      await register(
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName
+      );
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

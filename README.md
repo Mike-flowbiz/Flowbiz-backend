@@ -4,11 +4,13 @@
 
 ## 🚀 Project Status
 
-**Current Phase:** Milestone 1 - Week 1 ✅ **COMPLETED**
+**Current Phase:** Milestone 2 - Authentication & User Roles ✅ **COMPLETED**
 
 **Database:** ✅ Connected & Configured  
 **Backend API:** ✅ Configured & Ready  
-**Frontend:** ✅ Layouts & Routing Complete
+**Frontend:** ✅ Layouts & Routing Complete  
+**Authentication:** ✅ JWT + bcrypt + Protected Routes  
+**User Roles:** ✅ Role-based Access Control
 
 ---
 
@@ -37,7 +39,7 @@ Use Prisma Studio to visually inspect and manage your database.
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS
 - **Database:** PostgreSQL + Prisma ORM
-- **Authentication:** JWT + bcrypt (to be implemented)
+- **Authentication:** JWT + bcrypt ✅ Implemented
 - **Storage:** AWS S3 (to be configured)
 - **Deployment:** Vercel (frontend) + Railway/Render (backend)
 
@@ -54,11 +56,11 @@ Use Prisma Studio to visually inspect and manage your database.
 - [x] Base layouts & routing
 - [x] CI/CD pipeline configuration
 
-### 📅 Week 2 - Authentication & User Roles
-- JWT login/register
-- bcrypt password hashing
-- Protected routes + middleware
-- Role-based access (admin, contractor, client)
+### ✅ Week 2 - Authentication & User Roles **COMPLETED**
+- [x] JWT login/register
+- [x] bcrypt password hashing
+- [x] Protected routes + middleware
+- [x] Role-based access (admin, contractor, client)
 
 ### 📅 Week 3 - Dashboard & Analytics
 - Revenue metrics APIs

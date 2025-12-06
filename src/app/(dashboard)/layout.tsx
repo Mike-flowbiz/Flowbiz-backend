@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: '📊' },
@@ -17,9 +19,21 @@ const navigation = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  const userInitials = user
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : 'U';
+  const userName = user ? `${user.firstName} ${user.lastName}` : 'User Name';
+  const userRole = user ? user.role : 'Contractor';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -76,22 +90,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                  U
+                  {userInitials}
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-700">User Name</p>
-                <p className="text-xs text-gray-500">Contractor</p>
+                <p className="text-sm font-medium text-gray-700">{userName}</p>
+                <p className="text-xs text-gray-500">{userRole}</p>
               </div>
-              <Link
-                href="/login"
+              <button
+                onClick={handleLogout}
                 className="text-gray-400 hover:text-gray-600"
                 title="Logout"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -121,6 +135,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

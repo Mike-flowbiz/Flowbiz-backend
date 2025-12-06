@@ -4,11 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:backend": "NODE_ENV=development node --loader tsx src/backend/server.ts",
-    "dev:all": "concurrently \"npm run dev\" \"npm run dev:backend\"",
     "build": "next build",
     "start": "next start",
-    "start:backend": "node dist/backend/server.js",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
@@ -20,6 +17,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.940.0",
     "@aws-sdk/s3-request-presigner": "^3.940.0",
+    "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.0.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
@@ -42,6 +40,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.15.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^9.2.1",

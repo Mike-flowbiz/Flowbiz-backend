@@ -1,6 +1,3 @@
-// FlowBiz Database Schema
-// Business Management Platform with Invoicing, Timesheets, Expenses & Client Portal
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,172 +6,133 @@ datasource db {
   provider = "postgresql"
 }
 
-// User & Authentication
-enum UserRole {
-  ADMIN
-  CONTRACTOR
-  CLIENT
-}
-
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String   // bcrypt hashed
-  firstName String
-  lastName  String
-  role      UserRole @default(CONTRACTOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  invoices   Invoice[]
-  timesheets Timesheet[]
-  expenses   Expense[]
-
-  @@map("users")
-}
-
-// Business Settings
-model BusinessSettings {
-  id              String   @id @default(cuid())
-  companyName     String
-  companyEmail    String?
-  companyPhone    String?
-  companyAddress  String?
-  vatNumber       String?
-  vatRate         Float    @default(20.0) // Default 20% VAT
-  logo            String?  // S3 URL
-  primaryColor    String   @default("#3B82F6")
-  secondaryColor  String   @default("#1E40AF")
-  bankName        String?
-  accountNumber   String?
-  sortCode        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@map("business_settings")
-}
-
-// Clients
-model Client {
-  id             String   @id @default(cuid())
-  name           String
-  email          String   @unique
-  phone          String?
-  address        String?
-  companyName    String?
+model business_settings {
+  id             String   @id
+  companyName    String
+  companyEmail   String?
+  companyPhone   String?
+  companyAddress String?
   vatNumber      String?
-  notes          String?
-  isActive       Boolean  @default(true)
+  vatRate        Float    @default(20.0)
+  logo           String?
+  primaryColor   String   @default("#3B82F6")
+  secondaryColor String   @default("#1E40AF")
+  bankName       String?
+  accountNumber  String?
+  sortCode       String?
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Relations
-  invoices   Invoice[]
-  timesheets Timesheet[]
-
-  @@map("clients")
+  updatedAt      DateTime
 }
 
-// Products & Services
-enum ProductType {
-  PRODUCT
-  SERVICE
-}
-
-model Product {
-  id          String      @id @default(cuid())
+model clients {
+  id          String       @id
   name        String
-  description String?
-  type        ProductType @default(SERVICE)
-  price       Float
-  unit        String      @default("hour") // hour, day, item, etc.
-  category    String?
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  // Relations
-  invoiceItems InvoiceItem[]
-
-  @@map("products")
+  email       String       @unique
+  phone       String?
+  address     String?
+  companyName String?
+  vatNumber   String?
+  notes       String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  invoices    invoices[]
+  timesheets  timesheets[]
 }
 
-// Invoices
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  PAID
-  OVERDUE
-  CANCELLED
+model expenses {
+  id          String          @id
+  userId      String
+  date        DateTime        @default(now())
+  amount      Float
+  category    ExpenseCategory @default(OTHER)
+  description String
+  receiptUrl  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime
+  users       users           @relation(fields: [userId], references: [id])
 }
 
-model Invoice {
-  id            String        @id @default(cuid())
-  invoiceNumber String        @unique
-  clientId      String
-  userId        String
-  issueDate     DateTime      @default(now())
-  dueDate       DateTime
-  status        InvoiceStatus @default(DRAFT)
-  subtotal      Float
-  vatAmount     Float
-  vatRate       Float
-  total         Float
-  notes         String?
-  pdfUrl        String?       // S3 URL
-  sentAt        DateTime?
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  // Relations
-  client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  user         User          @relation(fields: [userId], references: [id])
-  invoiceItems InvoiceItem[]
-
-  @@map("invoices")
-}
-
-model InvoiceItem {
-  id          String  @id @default(cuid())
+model invoice_items {
+  id          String    @id
   invoiceId   String
   productId   String?
   description String
   quantity    Float
   unitPrice   Float
   amount      Float
-  createdAt   DateTime @default(now())
-
-  // Relations
-  invoice Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-
-  @@map("invoice_items")
+  createdAt   DateTime  @default(now())
+  invoices    invoices  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  products    products? @relation(fields: [productId], references: [id])
 }
 
-// Timesheets
-model Timesheet {
-  id          String   @id @default(cuid())
+model invoices {
+  id            String          @id
+  invoiceNumber String          @unique
+  clientId      String
+  userId        String
+  issueDate     DateTime        @default(now())
+  dueDate       DateTime
+  status        InvoiceStatus   @default(DRAFT)
+  subtotal      Float
+  vatAmount     Float
+  vatRate       Float
+  total         Float
+  notes         String?
+  pdfUrl        String?
+  sentAt        DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  invoice_items invoice_items[]
+  clients       clients         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  users         users           @relation(fields: [userId], references: [id])
+}
+
+model products {
+  id            String          @id
+  name          String
+  description   String?
+  type          ProductType     @default(SERVICE)
+  price         Float
+  unit          String          @default("hour")
+  category      String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  invoice_items invoice_items[]
+}
+
+model timesheets {
+  id          String    @id
   userId      String
   clientId    String?
-  date        DateTime @default(now())
+  date        DateTime  @default(now())
   hours       Float
   description String?
-  isTimerMode Boolean  @default(false)
+  isTimerMode Boolean   @default(false)
   startTime   DateTime?
   endTime     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  user   User    @relation(fields: [userId], references: [id])
-  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
-
-  @@map("timesheets")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  clients     clients?  @relation(fields: [clientId], references: [id])
+  users       users     @relation(fields: [userId], references: [id])
 }
 
-// Expenses
+model users {
+  id         String       @id
+  email      String       @unique
+  password   String
+  firstName  String
+  lastName   String
+  role       UserRole     @default(CONTRACTOR)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  expenses   expenses[]
+  invoices   invoices[]
+  timesheets timesheets[]
+}
+
 enum ExpenseCategory {
   TRAVEL
   SUPPLIES
@@ -184,19 +142,21 @@ enum ExpenseCategory {
   OTHER
 }
 
-model Expense {
-  id          String          @id @default(cuid())
-  userId      String
-  date        DateTime        @default(now())
-  amount      Float
-  category    ExpenseCategory @default(OTHER)
-  description String
-  receiptUrl  String?         // S3 URL
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
 
-  // Relations
-  user User @relation(fields: [userId], references: [id])
+enum ProductType {
+  PRODUCT
+  SERVICE
+}
 
-  @@map("expenses")
+enum UserRole {
+  ADMIN
+  CONTRACTOR
+  CLIENT
 }
