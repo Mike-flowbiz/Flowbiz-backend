@@ -4,7 +4,7 @@
 
 ## 🚀 Project Status
 
-**Current Phase:** Milestone 2 - Authentication & User Roles ✅ **COMPLETED**
+**Current Phase:** Milestone 3 - Dashboard & Analytics 🚧 **IN PROGRESS**
 
 **Database:** ✅ Connected & Configured  
 **Backend API:** ✅ Configured & Ready  
@@ -195,22 +195,16 @@ FlowBiz/
 
 ---
 
-## 📝 Next Steps - Milestone 2 (Week 2)
+## 📝 Next Steps - Milestone 3 (Week 3)
 
-Ready to start Milestone 2:
+Ready to start Milestone 3:
 
 1. ✅ **Milestone 1 Complete!**
-2. 🎯 Implement JWT authentication
-3. 🎯 Add bcrypt password hashing
-4. 🎯 Create protected route middleware
-5. 🎯 Build login/register UI
-6. 🎯 Implement role-based access control
-
----
-
-## 💰 Project Budget
-
-**Total:** £2,800 over 10 weeks (£280/milestone)
+2. ✅ **Milestone 2 Complete!**
+3. 🎯 Revenue metrics APIs
+4. 🎯 Activities feed
+5. 🎯 Monthly revenue graph
+6. 🎯 Dashboard UI with charts
 
 ---
 
