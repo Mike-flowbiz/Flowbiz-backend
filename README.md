@@ -215,6 +215,8 @@ Ready to start Milestone 4:
 - `PROJECT_SCOPE.md` - Complete 10-week milestone breakdown with budget
 - `MILESTONE_1_COMPLETE.md` - Week 1 completion summary
 - `MILESTONE_1_SUMMARY.md` - Detailed milestone breakdown
+- `MILESTONE_2_COMPLETE.md` - Week 2 completion summary (Authentication & User Roles)
+- `MILESTONE_3_COMPLETE.md` - Week 3 completion summary (Dashboard & Analytics)
 - `CONTRIBUTING.md` - Contribution guidelines
 - `KNOWN_ISSUES.md` - Known issues and workarounds
 
