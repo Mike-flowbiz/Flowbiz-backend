@@ -9,7 +9,7 @@ router.use(authenticate);
 // Get business settings
 router.get('/', async (req, res) => {
   try {
-    const settings = await prisma.businessSettings.findFirst();
+    const settings = await prisma.businessSetting.findFirst();
     res.json({ settings });
   } catch (error) {
     console.error('Get settings error:', error);

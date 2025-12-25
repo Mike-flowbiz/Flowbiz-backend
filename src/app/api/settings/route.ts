@@ -5,7 +5,7 @@ import { withAuth, withAuthz } from '@/lib/middleware/auth';
 // GET /api/settings - Get business settings
 export const GET = withAuth(async (request: NextRequest, user) => {
   try {
-    const settings = await prisma.businessSettings.findFirst();
+    const settings = await prisma.businessSetting.findFirst();
     return NextResponse.json({ settings });
   } catch (error) {
     console.error('Get settings error:', error);
