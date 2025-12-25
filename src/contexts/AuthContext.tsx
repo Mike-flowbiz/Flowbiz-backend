@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, User } from '../lib/api';
+import { UserRole } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -13,7 +14,7 @@ interface AuthContextType {
     password: string,
     firstName: string,
     lastName: string,
-    role?: 'ADMIN' | 'CONTRACTOR' | 'CLIENT'
+    role?: UserRole
   ) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     firstName: string,
     lastName: string,
-    role?: 'ADMIN' | 'CONTRACTOR' | 'CLIENT'
+    role?: UserRole
   ) => {
     const response = await api.register(email, password, firstName, lastName, role);
     setUser(response.user);

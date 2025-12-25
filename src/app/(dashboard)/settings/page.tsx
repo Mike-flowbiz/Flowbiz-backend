@@ -1,7 +1,7 @@
 'use client';
 
 import ProtectedRoute from '../../../components/ProtectedRoute';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../../../types';
 
 export default function SettingsPage() {
   return (

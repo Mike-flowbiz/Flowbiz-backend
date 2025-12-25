@@ -1,4 +1,6 @@
 // Use relative URLs for Next.js API routes (same origin)
+import { UserRole } from '../types';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export interface User {
@@ -6,7 +8,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'CONTRACTOR' | 'CLIENT';
+  role: UserRole;
   createdAt: string;
 }
 
@@ -79,7 +81,7 @@ class ApiClient {
     password: string,
     firstName: string,
     lastName: string,
-    role?: 'ADMIN' | 'CONTRACTOR' | 'CLIENT'
+    role?: UserRole
   ): Promise<RegisterResponse> {
     return this.request<RegisterResponse>('/auth/register', {
       method: 'POST',
