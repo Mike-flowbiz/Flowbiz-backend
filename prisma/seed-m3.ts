@@ -17,6 +17,7 @@ function getDateForMonthOffset(monthOffset: number, day: number): Date {
   return new Date(now.getFullYear(), now.getMonth() - monthOffset, day);
 }
 
+
 async function main() {
   console.log('🌱 Seeding demo data for Milestone 3 & 4 (dashboard + clients)...');
 
