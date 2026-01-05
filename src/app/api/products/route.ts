@@ -5,8 +5,36 @@ import { withAuth, withAuthz } from '@/lib/middleware/auth';
 // GET /api/products - Get all products
 export const GET = withAuth(async (request: NextRequest, user) => {
   try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search');
+    const type = searchParams.get('type');
+    const category = searchParams.get('category');
+    const isActive = searchParams.get('isActive');
+
+    const where: any = {};
+    
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    
+    if (type) {
+      where.type = type as 'PRODUCT' | 'SERVICE';
+    }
+    
+    if (category) {
+      where.category = { contains: category, mode: 'insensitive' };
+    }
+    
+    if (isActive !== null) {
+      where.isActive = isActive === 'true';
+    }
+
     const products = await prisma.product.findMany({
-      where: { isActive: true },
+      where,
       orderBy: { name: 'asc' },
     });
 
@@ -29,6 +57,13 @@ export const POST = withAuthz(['ADMIN', 'CONTRACTOR'], async (request: NextReque
     if (!name || price === undefined) {
       return NextResponse.json(
         { error: 'Name and price are required' },
+        { status: 400 }
+      );
+    }
+
+    if (price < 0) {
+      return NextResponse.json(
+        { error: 'Price must be a positive number' },
         { status: 400 }
       );
     }
