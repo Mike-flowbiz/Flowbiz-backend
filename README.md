@@ -4,7 +4,7 @@
 
 ## 🚀 Project Status
 
-**Current Phase:** Milestone 5 - Products & Services + Business Settings 🚧 **IN PROGRESS**
+**Current Phase:** Milestone 6 - Invoicing System Core 🚧 **READY TO START**
 
 **Database:** ✅ Connected & Configured  
 **Backend API:** ✅ Configured & Ready  
@@ -73,11 +73,12 @@ Use Prisma Studio to visually inspect and manage your database.
 - [x] Search & validation
 - [x] Frontend listing + modals
 
-### 📅 Week 5 - Products/Services & Business Settings
-- Products/Services CRUD
-- VAT settings
-- Company info management
-- Logo upload (S3)
+### ✅ Week 5 - Products/Services & Business Settings **COMPLETED**
+- [x] Products/Services CRUD
+- [x] VAT settings
+- [x] Company info management
+- [x] Logo upload (S3)
+- [x] Branding colors
 
 ### 📅 Week 6 - Invoicing System Core
 - Create/Edit/Delete invoices
@@ -195,16 +196,19 @@ FlowBiz/
 
 ---
 
-## 📝 Next Steps - Milestone 5 (Week 5)
+## 📝 Next Steps - Milestone 6 (Week 6)
 
-Ready to start Milestone 5:
+Ready to start Milestone 6:
 
 1. ✅ **Milestone 1 Complete!**
 2. ✅ **Milestone 2 Complete!**
 3. ✅ **Milestone 3 Complete!**
 4. ✅ **Milestone 4 Complete!**
-5. 🎯 Products/Services CRUD
-6. 🎯 Business Settings & Branding
+5. ✅ **Milestone 5 Complete!**
+6. 🎯 Invoicing System Core
+7. 🎯 Auto invoice numbering
+8. 🎯 VAT calculations
+9. 🎯 Invoice builder UI
 
 ---
 
@@ -218,6 +222,7 @@ Ready to start Milestone 5:
 - `MILESTONE_2_COMPLETE.md` - Week 2 completion summary (Authentication & User Roles)
 - `MILESTONE_3_COMPLETE.md` - Week 3 completion summary (Dashboard & Analytics)
 - `MILESTONE_4_COMPLETE.md` - Week 4 completion summary (Clients Module)
+- `MILESTONE_5_COMPLETE.md` - Week 5 completion summary (Products & Services + Business Settings)
 - `CONTRIBUTING.md` - Contribution guidelines
 - `KNOWN_ISSUES.md` - Known issues and workarounds
 
