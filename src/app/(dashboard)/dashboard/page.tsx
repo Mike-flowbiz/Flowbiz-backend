@@ -22,7 +22,7 @@ type RevenueChartResponse = {
 
 type InvoiceActivity = {
   id: string;
-  number: string;
+  invoiceNumber: string;
   status: string;
   total: number;
   createdAt: string;
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
-                      Invoice {invoice.number}{' '}
+                      Invoice {invoice.invoiceNumber}{' '}
                       <span className="ml-1 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-700">
                         {invoice.status}
                       </span>

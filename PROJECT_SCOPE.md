@@ -124,12 +124,12 @@
 - ✅ Milestone 3 - Dashboard & Analytics (Week 3)
 - ✅ Milestone 4 - Clients Module (Week 4)
 - ✅ Milestone 5 - Products & Services + Business Settings (Week 5)
+- ✅ Milestone 6 - Invoicing System Core (Week 6)
 
 **In Progress:**
-- 🚧 None - Ready for Milestone 6
+- 🚧 None - Ready for Milestone 7
 
 **Remaining:**
-- 📅 Milestone 6 - Invoicing System Core (Week 6)
 - 📅 Milestone 7 - PDF Generation & Storage (Week 7)
 - 📅 Milestone 8 - Timesheets & Expenses (Week 8)
 - 📅 Milestone 9 - Email & Client Portal (Week 9)

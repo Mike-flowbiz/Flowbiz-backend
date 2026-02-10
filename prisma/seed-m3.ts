@@ -1,8 +1,51 @@
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
+import { faker } from '@faker-js/faker';
 import { PrismaClient, InvoiceStatus } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+
+/** Generate demo client definitions with faker. Seeded for reproducibility. */
+function generateClientDefinitions(count: number) {
+  faker.seed(42);
+  const clients: Array<{
+    name: string;
+    email: string;
+    companyName: string | null;
+    address: string;
+    phone: string;
+    vatNumber: string | null;
+    notes: string;
+    isActive?: boolean;
+  }> = [];
+
+  for (let i = 0; i < count; i++) {
+    const isIndividual = i === 3; // one individual (no company/vat)
+    const isInactive = i === 5;   // one inactive client
+    const name = isIndividual
+      ? faker.person.fullName()
+      : faker.company.name();
+    const email = faker.internet.email({
+      firstName: name.split(' ')[0]?.toLowerCase() ?? 'client',
+      provider: 'flowbiz.test',
+    }).replace('@', `+c${i}@`);
+    const address = faker.location.streetAddress({ useFullAddress: true }) + ', ' + faker.location.city() + ', UK';
+    const phone = faker.phone.number({ style: 'international' });
+    const notes = faker.lorem.sentence();
+
+    clients.push({
+      name,
+      email,
+      companyName: isIndividual ? null : name,
+      address,
+      phone,
+      vatNumber: isIndividual ? null : 'GB' + faker.string.numeric(9),
+      notes,
+      ...(isInactive && { isActive: false }),
+    });
+  }
+  return clients;
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
@@ -41,64 +84,8 @@ async function main() {
 
   console.log(`👤 Demo admin user ready: ${demoUser.email} / ${demoPassword}`);
 
-  // 2) Create or reuse some demo clients
-  const clientDefinitions = [
-    {
-      name: 'Acme Corporation',
-      email: 'billing+acme@flowbiz.test',
-      companyName: 'Acme Corporation',
-      address: '1 Acme Way, London, UK',
-      phone: '+44 20 7123 4567',
-      vatNumber: 'GB123456789',
-      notes: 'Premium client - priority support',
-    },
-    {
-      name: 'Globex Ltd',
-      email: 'billing+globex@flowbiz.test',
-      companyName: 'Globex Ltd',
-      address: '22 Globex Street, Manchester, UK',
-      phone: '+44 161 234 5678',
-      vatNumber: 'GB987654321',
-      notes: 'Monthly retainer client',
-    },
-    {
-      name: 'Initech Solutions',
-      email: 'billing+initech@flowbiz.test',
-      companyName: 'Initech Solutions',
-      address: '3 Initech Park, Birmingham, UK',
-      phone: '+44 121 345 6789',
-      vatNumber: 'GB456789123',
-      notes: 'New client - onboarding in progress',
-    },
-    {
-      name: 'John Smith',
-      email: 'john.smith@example.test',
-      companyName: null,
-      address: '45 High Street, Leeds, UK',
-      phone: '+44 113 456 7890',
-      vatNumber: null,
-      notes: 'Individual contractor',
-    },
-    {
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@startup.test',
-      companyName: 'StartUp Inc',
-      address: '100 Innovation Drive, Cambridge, UK',
-      phone: '+44 1223 567 890',
-      vatNumber: 'GB111222333',
-      notes: 'Tech startup - fast growth',
-    },
-    {
-      name: 'Michael Brown',
-      email: 'michael.brown@inactive.test',
-      companyName: 'Brown & Co',
-      address: '78 Business Park, Bristol, UK',
-      phone: '+44 117 678 9012',
-      vatNumber: 'GB444555666',
-      notes: 'Contract ended - inactive',
-      isActive: false,
-    },
-  ] as const;
+  // 2) Create or reuse some demo clients (generated, not hardcoded)
+  const clientDefinitions = generateClientDefinitions(6);
 
   const clients = [] as { id: string; name: string }[];
 

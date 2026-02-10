@@ -4,7 +4,7 @@
 
 ## 🚀 Project Status
 
-**Current Phase:** Milestone 6 - Invoicing System Core 🚧 **READY TO START**
+**Current Phase:** Milestone 7 - PDF Generation & Storage 🚧 **READY TO START**
 
 **Database:** ✅ Connected & Configured  
 **Backend API:** ✅ Configured & Ready  
@@ -80,11 +80,11 @@ Use Prisma Studio to visually inspect and manage your database.
 - [x] Logo upload (S3)
 - [x] Branding colors
 
-### 📅 Week 6 - Invoicing System Core
-- Create/Edit/Delete invoices
-- Auto invoice numbering
-- VAT calculations
-- Invoice builder UI
+### ✅ Week 6 - Invoicing System Core **COMPLETED**
+- [x] Create/Edit/Delete invoices
+- [x] Auto invoice numbering
+- [x] VAT calculations
+- [x] Invoice builder UI
 
 ### 📅 Week 7 - PDF Generation & Storage
 - Server-side PDF generation
@@ -196,19 +196,15 @@ FlowBiz/
 
 ---
 
-## 📝 Next Steps - Milestone 6 (Week 6)
+## 📝 Next Steps - Milestone 7 (Week 7)
 
-Ready to start Milestone 6:
+Ready to start Milestone 7:
 
-1. ✅ **Milestone 1 Complete!**
-2. ✅ **Milestone 2 Complete!**
-3. ✅ **Milestone 3 Complete!**
-4. ✅ **Milestone 4 Complete!**
-5. ✅ **Milestone 5 Complete!**
-6. 🎯 Invoicing System Core
-7. 🎯 Auto invoice numbering
-8. 🎯 VAT calculations
-9. 🎯 Invoice builder UI
+1. ✅ **Milestone 1–6 Complete!**
+2. 🎯 PDF generation for invoices
+3. 🎯 S3 upload for PDFs
+4. 🎯 Branded template (logo, company info)
+5. 🎯 View/Download PDF in UI
 
 ---
 
@@ -223,6 +219,7 @@ Ready to start Milestone 6:
 - `MILESTONE_3_COMPLETE.md` - Week 3 completion summary (Dashboard & Analytics)
 - `MILESTONE_4_COMPLETE.md` - Week 4 completion summary (Clients Module)
 - `MILESTONE_5_COMPLETE.md` - Week 5 completion summary (Products & Services + Business Settings)
+- `MILESTONE_6_COMPLETE.md` - Week 6 completion summary (Invoicing System Core)
 - `CONTRIBUTING.md` - Contribution guidelines
 - `KNOWN_ISSUES.md` - Known issues and workarounds
 
