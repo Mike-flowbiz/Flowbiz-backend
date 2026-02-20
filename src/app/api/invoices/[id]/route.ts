@@ -183,7 +183,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/invoices/[id] - Delete invoice (cascade deletes items)
+// DELETE /api/invoices/[id] - Delete invoice (InvoiceItem has onDelete: Cascade in schema, so items are removed by DB)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -198,6 +198,7 @@ export async function DELETE(
 
   try {
     const { id } = await params;
+    // Prisma cascade: InvoiceItem.invoice has onDelete: Cascade, so invoiceItems are deleted automatically
     await prisma.invoice.delete({ where: { id } });
     return NextResponse.json({ message: 'Invoice deleted' });
   } catch (error: unknown) {

@@ -130,8 +130,13 @@ export const POST = withAuthz(['ADMIN', 'CONTRACTOR'], async (request: NextReque
     const total = Math.round((subtotal + vatAmount) * 100) / 100;
 
     const issueDate = new Date();
-    const due = dueDate ? new Date(dueDate) : new Date(issueDate);
-    due.setDate(due.getDate() + 30);
+    const due = dueDate
+      ? new Date(dueDate)
+      : (() => {
+          const d = new Date(issueDate);
+          d.setDate(d.getDate() + 30);
+          return d;
+        })();
 
     const invoice = await prisma.invoice.create({
       data: {
