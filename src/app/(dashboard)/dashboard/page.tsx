@@ -231,7 +231,7 @@ export default function DashboardPage() {
               <div className="flex items-end h-full space-x-3">
                 {revenueData.map((point) => (
                   <div key={point.month} className="flex-1 flex flex-col items-center">
-                    <div className="relative w-full bg-gray-100 rounded-md overflow-hidden flex items-end">
+                    <div className="relative h-full w-full bg-gray-100 rounded-md overflow-hidden flex items-end">
                       <div
                         className="w-full bg-blue-500 rounded-md transition-all"
                         style={{

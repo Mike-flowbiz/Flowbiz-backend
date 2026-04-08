@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, createAuthResponse, createAuthzResponse } from '@/lib/middleware/auth';
 import { parseFileField, validateReceiptFile, fileToBuffer } from '@/lib/middleware/upload';
 import { uploadReceipt, isS3Configured } from '@/backend/utils/s3';
+import { savePublicUpload } from '@/backend/utils/localUpload';
 
 export async function POST(request: NextRequest) {
   const authResult = authenticate(request);
@@ -13,13 +14,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    if (!isS3Configured()) {
-      return NextResponse.json(
-        { error: 'S3 is not configured' },
-        { status: 503 }
-      );
-    }
-
     const { file } = await parseFileField(request, 'receipt');
     if (!file) {
       return NextResponse.json(
@@ -37,11 +31,14 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = await fileToBuffer(file);
-    const receiptUrl = await uploadReceipt(buffer, file.name, file.type);
+    const receiptUrl = isS3Configured()
+      ? await uploadReceipt(buffer, file.name, file.type)
+      : await savePublicUpload(buffer, 'receipts', file.name);
 
     return NextResponse.json({
       message: 'Receipt uploaded successfully',
       url: receiptUrl,
+      storage: isS3Configured() ? 's3' : 'local',
     });
   } catch (error: any) {
     console.error('Receipt upload error:', error);

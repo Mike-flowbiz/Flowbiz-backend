@@ -145,7 +145,7 @@ export default function SettingsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to upload logo');
 
-      setFormData((prev) => ({ ...prev, logo: data.url }));
+      setLogoPreview(data.url);
       setLogoFile(null);
       return data.url;
     } catch (err) {

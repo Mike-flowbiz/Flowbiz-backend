@@ -118,8 +118,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="sticky top-0 z-10 flex h-16 bg-white border-b border-gray-200 lg:hidden">
           <button
             type="button"
+            aria-label={sidebarOpen ? 'Close navigation menu' : 'Open navigation menu'}
             className="px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-            onClick={() => setSidebarOpen(true)}
+            onClick={() => setSidebarOpen((prev) => !prev)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

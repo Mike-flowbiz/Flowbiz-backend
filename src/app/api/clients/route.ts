@@ -38,16 +38,25 @@ export const POST = withAuthz(['ADMIN', 'CONTRACTOR'], async (request: NextReque
   try {
     const body = await request.json();
     const { name, email, phone, address, companyName, vatNumber, notes } = body;
+    const normalizedEmail = typeof email === 'string' ? email.trim() : '';
 
-    if (!name || !email) {
+    if (!name || !normalizedEmail) {
       return NextResponse.json(
         { error: 'Name and email are required' },
         { status: 400 }
       );
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      return NextResponse.json(
+        { error: 'Please enter a valid email address' },
+        { status: 400 }
+      );
+    }
+
     const client = await prisma.client.create({
-      data: { name, email, phone, address, companyName, vatNumber, notes },
+      data: { name, email: normalizedEmail, phone, address, companyName, vatNumber, notes },
     });
 
     return NextResponse.json(

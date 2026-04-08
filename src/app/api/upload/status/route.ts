@@ -6,8 +6,9 @@ export const GET = withAuth(async (request: NextRequest, user) => {
   const configured = isS3Configured();
   return NextResponse.json({
     s3Configured: configured,
+    localFallbackEnabled: !configured,
     message: configured
       ? 'AWS S3 is configured and ready'
-      : 'AWS S3 is not configured. Please set AWS credentials in .env',
+      : 'AWS S3 is not configured. Local upload fallback is active.',
   });
 });

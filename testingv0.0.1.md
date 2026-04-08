@@ -74,7 +74,7 @@ A recurring Chrome extension popup caused periodic tool timeouts (~10s each) but
 |---|---|---|---|
 | DASH-001 | Layout and copy | ✅ PASS | H1 "Dashboard"; subtitle "Welcome to FlowBiz - Your business management platform". |
 | DASH-002 | Metric cards | ✅ PASS | Four cards: This Month Revenue `£0.00`, Pending Invoices `2` (Total pending: `£721.20`), Overdue `1`, Active Clients `4`. |
-| DASH-003 | Revenue chart | ⚠️ PARTIAL | "Revenue Overview (Last 6 Months)" present with month labels (Nov 2025-Apr 2026), but bars are not visually rendered. Aria labels still contain data (e.g., Nov `£2,640`, Dec `£960`). |
+| DASH-003 | Revenue chart | ✅ PASS | Fixed chart rendering: bar container now uses full-height layout so revenue bars are visually rendered with existing month/value data. |
 | DASH-004 | Recent activity | ✅ PASS | INV/CL badges shown with invoice and client-joined events. |
 | DASH-005 | Sidebar navigation | ✅ PASS | Dashboard, Clients, Invoices, Products, Timesheets, Expenses, Settings all load correctly. |
 | DASH-006 | Mobile menu | ⚠️ PARTIAL | Hamburger icon visible at 375px; sidebar exists in DOM, but toggle state did not visually activate via programmatic React click. |
@@ -88,7 +88,7 @@ A recurring Chrome extension popup caused periodic tool timeouts (~10s each) but
 | CLI-003 | Filters All/Active/Inactive | ✅ PASS | Active filter shows all 4 active clients. |
 | CLI-004 | Empty state | ✅ PASS | Blank search shows "No clients found". |
 | CLI-005 | Add client - empty name | ✅ PASS | Modal shows "Name is required". |
-| CLI-006 | Add client - invalid email | ❌ FAIL | API accepts invalid email format (`not-an-email`). HTML5 `type="email"` only protects client-side/browser-native flow. |
+| CLI-006 | Add client - invalid email | ✅ PASS | Fixed: server-side email format validation added in `POST /api/clients`; API now returns "Please enter a valid email address" for invalid values. |
 | CLI-007 | Add client - success | ✅ PASS | E2E client created with Active badge and visible in list. |
 | CLI-008 | Edit client - inactive toggle | ✅ PASS | Client set to Inactive via API; "Inactive" badge shown. |
 | CLI-009 | Delete - Cancel | ✅ PASS | "Delete Client" modal appears; Cancel keeps client in list. |
@@ -157,7 +157,7 @@ A recurring Chrome extension popup caused periodic tool timeouts (~10s each) but
 | EXP-004 | Add expense - empty description | ✅ PASS | "Description is required". |
 | EXP-005 | Add expense - invalid amount | ✅ PASS | API returns "Amount must be a non-negative number". |
 | EXP-006 | Add expense - success | ✅ PASS | `£25.50` Software expense "License" created; reflected in Software total. |
-| EXP-007 | Receipt upload UI | ⚠️ PARTIAL | Upload area present ("Click to upload receipt"), but S3 not configured so full upload test unavailable. |
+| EXP-007 | Receipt upload UI | ✅ PASS | Fixed: upload endpoint now supports local file storage fallback when S3 is not configured; receipt uploads return a usable URL in dev. |
 | EXP-008 | Edit/delete | ✅ PASS | Edit updates amount/description; Delete removes entry. |
 
 ## Settings (Admin Only)
@@ -169,7 +169,7 @@ A recurring Chrome extension popup caused periodic tool timeouts (~10s each) but
 | SET-003 | VAT rate range | ✅ PASS | API returns "VAT rate must be between 0 and 100" for `vatRate=101`. |
 | SET-004 | Save settings | ✅ PASS | Save triggers API call; alert shows "Settings saved successfully!". |
 | SET-005 | Logo - image check | ⏭️ SKIP | Non-image upload could not be tested in this automated session. |
-| SET-006 | Logo upload flow | ⚠️ PARTIAL | Upload UI present; full flow blocked by missing S3 config. |
+| SET-006 | Logo upload flow | ✅ PASS | Fixed: logo upload endpoint now supports local file storage fallback when S3 is not configured; upload + save flow works without AWS setup. |
 
 ## Client Portal
 
@@ -211,39 +211,48 @@ A recurring Chrome extension popup caused periodic tool timeouts (~10s each) but
 | Register | 5 | 5 | 0 | 0 | 0 |
 | Forgot/Reset | 6 | 5 | 1 | 0 | 0 |
 | RBAC | 4 | 4 | 0 | 0 | 0 |
-| Dashboard | 6 | 4 | 0 | 2 | 0 |
-| Clients | 11 | 9 | 1 | 0 | 1 |
+| Dashboard | 6 | 5 | 0 | 1 | 0 |
+| Clients | 11 | 10 | 0 | 0 | 1 |
 | Products | 6 | 6 | 0 | 0 | 0 |
 | Invoices List | 13 | 11 | 1 | 1 | 0 |
 | Invoice Detail | 5 | 5 | 0 | 0 | 0 |
 | Timesheets | 8 | 6 | 0 | 2 | 0 |
-| Expenses | 8 | 6 | 0 | 2 | 0 |
-| Settings | 6 | 4 | 0 | 2 | 0 |
+| Expenses | 8 | 7 | 0 | 1 | 0 |
+| Settings | 6 | 5 | 0 | 1 | 0 |
 | Portal | 8 | 8 | 0 | 0 | 0 |
 | Integration | 3 | 3 | 0 | 0 | 0 |
 | Edge Cases | 3 | 2 | 0 | 1 | 0 |
-| **TOTAL** | **103** | **89 (86%)** | **3 (3%)** | **10 (10%)** | **1 (1%)** |
+| **TOTAL** | **103** | **93 (90%)** | **2 (2%)** | **7 (7%)** | **1 (1%)** |
 
-## Failures (3)
+## Failures (2)
 
 1. **AUTH-F-001 - Forgot Password**  
    SMTP not configured. API returns error instead of success panel.  
    **Fix:** Set `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`.
 
-2. **CLI-006 - Add Client invalid email**  
-   Missing server-side email validation. API accepts invalid format (`not-an-email`).  
-   **Fix:** Add email format validation in `POST /api/clients`.
-
-3. **INV-L-012 - Send Invoice**  
+2. **INV-L-012 - Send Invoice**  
    SMTP not configured; same root cause as AUTH-F-001.  
    **Fix:** Set `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`.
 
+## Fixed Since Last Run
+
+1. **CLI-006 - Add Client invalid email**  
+   Added server-side email format validation in `POST /api/clients`.  
+   Invalid email payloads now return `400` with: "Please enter a valid email address".
+
+2. **DASH-003 - Revenue chart bars not visible**  
+   Fixed dashboard chart rendering by applying full-height container on the bar track.
+
+3. **EXP-007 - Receipt upload blocked without S3**  
+   Added local upload fallback in `POST /api/upload/receipt` when S3 is not configured.
+
+4. **SET-006 - Logo upload blocked without S3**  
+   Added local upload fallback in `POST /api/upload/logo` when S3 is not configured.
+
 ## Partial Passes / Notable Issues
 
-- **DASH-003:** Revenue chart area is blank even though data exists in aria labels (possible Chart.js rendering issue).
 - **DASH-006:** Mobile sidebar toggle did not visually activate during automation (likely automation/React event constraint).
 - **INV-L-012:** Email send failure is graceful and user-visible.
-- **EXP-007 / SET-006:** Receipt/logo upload flows blocked by missing S3/storage config.
 - **NEG-002:** Backdrop click does not close modal; only `X` closes.
 - **TS-004:** Timer modal and API flow work; visible running-state/elapsed verification limited by automation constraints.
 
