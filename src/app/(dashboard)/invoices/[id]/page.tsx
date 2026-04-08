@@ -25,6 +25,7 @@ type Invoice = {
   vatRate: number;
   total: number;
   notes: string | null;
+  pdfUrl: string | null;
   client?: { name: string; email: string } | null;
   user?: { firstName: string; lastName: string; email: string } | null;
   invoiceItems: InvoiceItem[];
@@ -59,6 +60,7 @@ export default function InvoiceViewPage() {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -87,6 +89,47 @@ export default function InvoiceViewPage() {
       cancelled = true;
     };
   }, [id]);
+
+  const handleDownloadPdf = async () => {
+    if (!invoice) return;
+
+    if (invoice.pdfUrl) {
+      window.open(invoice.pdfUrl, '_blank');
+      return;
+    }
+
+    setPdfLoading(true);
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}/pdf`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      const contentType = res.headers.get('content-type');
+      if (contentType?.includes('application/json')) {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to generate PDF');
+        setInvoice((prev) => prev ? { ...prev, pdfUrl: data.pdfUrl } : prev);
+        window.open(data.pdfUrl, '_blank');
+      } else if (contentType?.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${invoice.invoiceNumber}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      } else {
+        throw new Error('Unexpected response format');
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to generate PDF');
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -138,12 +181,25 @@ export default function InvoiceViewPage() {
           >
             Back to list
           </Link>
-          <Link
-            href="/invoices"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          <button
+            onClick={handleDownloadPdf}
+            disabled={pdfLoading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm font-medium flex items-center gap-2"
           >
-            Edit invoice
-          </Link>
+            {pdfLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                Generating…
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {invoice?.pdfUrl ? 'View PDF' : 'Download PDF'}
+              </>
+            )}
+          </button>
         </div>
       </div>
 

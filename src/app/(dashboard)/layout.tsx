@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import { UserRole } from '../../types';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: '📊' },
@@ -32,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const userRole = user ? user.role : 'Contractor';
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.CONTRACTOR]}>
       <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (

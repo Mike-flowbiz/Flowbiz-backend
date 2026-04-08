@@ -58,7 +58,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const res = await fetch('/api/dashboard/metrics');
+        const res = await fetch('/api/dashboard/metrics', { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to load metrics');
         const data: MetricsResponse = await res.json();
         setMetrics(data);
@@ -71,7 +71,7 @@ export default function DashboardPage() {
 
     const fetchRevenue = async () => {
       try {
-        const res = await fetch('/api/dashboard/revenue-chart');
+        const res = await fetch('/api/dashboard/revenue-chart', { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to load revenue chart');
         const data: RevenueChartResponse = await res.json();
         setRevenueData(data.data);
@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
     const fetchActivities = async () => {
       try {
-        const res = await fetch('/api/dashboard/activities');
+        const res = await fetch('/api/dashboard/activities', { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to load activities');
         const data: ActivitiesResponse = await res.json();
         setActivities(data);

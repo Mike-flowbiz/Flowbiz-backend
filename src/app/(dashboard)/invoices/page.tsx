@@ -38,6 +38,7 @@ type Invoice = {
   vatRate: number;
   total: number;
   notes: string | null;
+  pdfUrl: string | null;
   client?: { name: string; email: string };
   invoiceItems: InvoiceItem[];
 };
@@ -87,6 +88,8 @@ export default function InvoicesPage() {
 
   const [deleteConfirm, setDeleteConfirm] = useState<Invoice | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState<string | null>(null);
+  const [sendLoading, setSendLoading] = useState<string | null>(null);
 
   const fetchInvoices = useCallback(async () => {
     try {
@@ -118,7 +121,7 @@ export default function InvoicesPage() {
           const data = await res.json();
           setClients(data.clients || []);
         }
-      } catch (_) {}
+      } catch (_) { }
     };
     const fetchProducts = async () => {
       try {
@@ -127,7 +130,7 @@ export default function InvoicesPage() {
           const data = await res.json();
           setProducts(data.products || []);
         }
-      } catch (_) {}
+      } catch (_) { }
     };
     const fetchSettings = async () => {
       try {
@@ -136,7 +139,7 @@ export default function InvoicesPage() {
           const data = await res.json();
           setSettings(data.settings || null);
         }
-      } catch (_) {}
+      } catch (_) { }
     };
     fetchClients();
     fetchProducts();
@@ -167,12 +170,12 @@ export default function InvoicesPage() {
     setLineItems(
       inv.invoiceItems.length > 0
         ? inv.invoiceItems.map((item) => ({
-            tempId: item.id,
-            productId: item.productId || '',
-            description: item.description,
-            quantity: String(item.quantity),
-            unitPrice: String(item.unitPrice),
-          }))
+          tempId: item.id,
+          productId: item.productId || '',
+          description: item.description,
+          quantity: String(item.quantity),
+          unitPrice: String(item.unitPrice),
+        }))
         : [emptyLineItem()]
     );
     setFormError(null);
@@ -206,11 +209,11 @@ export default function InvoicesPage() {
       prev.map((i) =>
         i.tempId === tempId
           ? {
-              ...i,
-              productId,
-              description: product.description || product.name,
-              unitPrice: String(product.price),
-            }
+            ...i,
+            productId,
+            description: product.description || product.name,
+            unitPrice: String(product.price),
+          }
           : i
       )
     );
@@ -302,6 +305,67 @@ export default function InvoicesPage() {
     }
   };
 
+  const handleViewPdf = async (inv: Invoice) => {
+    if (inv.pdfUrl) {
+      window.open(inv.pdfUrl, '_blank');
+      return;
+    }
+
+    // Generate PDF if not exists
+    setPdfLoading(inv.id);
+    try {
+      const res = await fetch(`/api/invoices/${inv.id}/pdf`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      const contentType = res.headers.get('content-type');
+      if (contentType?.includes('application/json')) {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to generate PDF');
+
+        // Update local state if we got a URL
+        setInvoices((prev) => prev.map((i) => (i.id === inv.id ? { ...i, pdfUrl: data.pdfUrl } : i)));
+        window.open(data.pdfUrl, '_blank');
+      } else if (contentType?.includes('application/pdf')) {
+        // Fallback: Direct binary stream
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // Clean up
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      } else {
+        throw new Error('Unexpected response format');
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to generate PDF');
+    } finally {
+      setPdfLoading(null);
+    }
+  };
+
+  const handleSend = async (inv: Invoice) => {
+    if (!confirm(`Send invoice ${inv.invoiceNumber} to ${inv.client?.email ?? 'client'}?`)) return;
+    setSendLoading(inv.id);
+    try {
+      const res = await fetch(`/api/invoices/${inv.id}/send`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send invoice');
+      // Update local status to SENT
+      setInvoices((prev) =>
+        prev.map((i) => (i.id === inv.id ? { ...i, status: 'SENT' } : i))
+      );
+      alert(`Invoice ${inv.invoiceNumber} sent successfully!`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to send invoice');
+    } finally {
+      setSendLoading(null);
+    }
+  };
+
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amount);
 
@@ -342,9 +406,8 @@ export default function InvoicesPage() {
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                filterStatus === status ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filterStatus === status ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
             >
               {status === 'all' ? 'All' : status}
             </button>
@@ -418,9 +481,8 @@ export default function InvoicesPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          statusColors[inv.status] ?? 'bg-gray-100 text-gray-800'
-                        }`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[inv.status] ?? 'bg-gray-100 text-gray-800'
+                          }`}
                       >
                         {inv.status}
                       </span>
@@ -432,12 +494,22 @@ export default function InvoicesPage() {
                       {formatCurrency(inv.total)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link
-                        href={`/invoices/${inv.id}`}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
+                      {inv.status !== 'CANCELLED' && (
+                        <button
+                          onClick={() => handleSend(inv)}
+                          disabled={sendLoading === inv.id}
+                          className="text-green-600 hover:text-green-900 mr-4 disabled:opacity-50"
+                        >
+                          {sendLoading === inv.id ? 'Sending…' : inv.status === 'SENT' ? 'Resend' : 'Send'}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleViewPdf(inv)}
+                        disabled={pdfLoading === inv.id}
+                        className="text-blue-600 hover:text-blue-900 mr-4 disabled:opacity-50"
                       >
-                        View
-                      </Link>
+                        {pdfLoading === inv.id ? 'Loading…' : 'PDF'}
+                      </button>
                       <button
                         onClick={() => openEditModal(inv)}
                         className="text-blue-600 hover:text-blue-900 mr-4"

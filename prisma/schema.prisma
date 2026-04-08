@@ -135,17 +135,19 @@ model Timesheet {
 }
 
 model User {
-  id         String      @id @default(uuid())
-  email      String      @unique
-  password   String
-  firstName  String
-  lastName   String
-  role       UserRole    @default(CONTRACTOR)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  expenses   Expense[]
-  invoices   Invoice[]
-  timesheets Timesheet[]
+  id                 String      @id @default(uuid())
+  email              String      @unique
+  password           String
+  firstName          String
+  lastName           String
+  role               UserRole    @default(CONTRACTOR)
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  expenses           Expense[]
+  invoices           Invoice[]
+  timesheets         Timesheet[]
 
   @@map("users")
 }

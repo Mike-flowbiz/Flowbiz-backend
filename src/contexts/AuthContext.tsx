@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (response.token) {
       localStorage.setItem('token', response.token);
     }
-    router.push('/dashboard');
+    router.push(response.user.role === UserRole.CLIENT ? '/portal' : '/dashboard');
   };
 
   const register = async (
@@ -65,7 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (loginResponse.token) {
       localStorage.setItem('token', loginResponse.token);
     }
-    router.push('/dashboard');
+    const resolvedRole = role ?? UserRole.CONTRACTOR;
+    router.push(resolvedRole === UserRole.CLIENT ? '/portal' : '/dashboard');
   };
 
   const logout = async () => {

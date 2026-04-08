@@ -22,7 +22,8 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
       }
 
       if (allowedRoles && !allowedRoles.includes(user.role)) {
-        router.push('/dashboard');
+        // Redirect CLIENT users to their portal, everyone else to the dashboard
+        router.push(user.role === UserRole.CLIENT ? '/portal' : '/dashboard');
         return;
       }
     }

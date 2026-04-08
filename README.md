@@ -4,7 +4,7 @@
 
 ## 🚀 Project Status
 
-**Current Phase:** Milestone 7 - PDF Generation & Storage 🚧 **READY TO START**
+**Current Phase:** ✅ **PROJECT COMPLETE — All 10 Milestones Delivered**
 
 **Database:** ✅ Connected & Configured  
 **Backend API:** ✅ Configured & Ready  
@@ -86,25 +86,28 @@ Use Prisma Studio to visually inspect and manage your database.
 - [x] VAT calculations
 - [x] Invoice builder UI
 
-### 📅 Week 7 - PDF Generation & Storage
-- Server-side PDF generation
-- S3 file upload
-- Branded templates
+### ✅ Week 7 - PDF Generation & Storage **COMPLETED**
+- [x] Server-side PDF generation
+- [x] S3 file upload
+- [x] Branded templates (logo, company info)
+- [x] View/Download PDF in UI
 
-### 📅 Week 8 - Timesheets & Expenses
-- Timer + manual entries
-- Receipt uploads
-- Categories & filtering
+### ✅ Week 8 - Timesheets & Expenses **COMPLETED**
+- [x] Timer + manual time entries
+- [x] Receipt uploads (S3)
+- [x] Categories & filtering
 
-### 📅 Week 9 - Email & Client Portal
-- Invoice notifications
-- Password reset
-- Client portal access
+### ✅ Week 9 - Email & Client Portal **COMPLETED**
+- [x] Invoice email notifications (send with PDF attachment)
+- [x] Password reset flow (forgot/reset pages + API)
+- [x] Client portal (CLIENT role, own invoices, PDF download)
 
-### 📅 Week 10 - Testing & Deployment
-- QA & bug fixes
-- Performance optimization
-- Production deployment
+### ✅ Week 10 - Testing & Deployment **COMPLETED**
+- [x] Bug fixes (dashboard auth, next.config, email env vars)
+- [x] Security headers + serverExternalPackages
+- [x] `.env.example` with all variables documented
+- [x] `vercel.json` deployment config
+- [x] `DEPLOYMENT.md` full production guide
 
 ---
 
@@ -127,6 +130,12 @@ AWS_ACCESS_KEY_ID=""
 AWS_SECRET_ACCESS_KEY=""
 AWS_REGION=""
 AWS_S3_BUCKET=""
+SMTP_HOST=""
+SMTP_PORT="587"
+SMTP_USER=""
+SMTP_PASS=""
+SMTP_FROM=""
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ### Run Development Servers
@@ -142,6 +151,21 @@ npm run dev:backend  # Backend API only (port 5000)
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend API: [http://localhost:5000/api](http://localhost:5000/api)
+
+### Admin login (local development)
+
+After `npx prisma db push`, create a default admin user:
+
+```bash
+npm run seed:admin
+```
+
+Default credentials (override with `ADMIN_EMAIL` / `ADMIN_PASSWORD`):
+
+- **Email:** `admin@flowbiz.local`
+- **Password:** `FlowBizAdmin123!`
+
+Sign in at `/login`, then change the password in production.
 
 ### Database Commands
 
@@ -200,11 +224,9 @@ FlowBiz/
 
 Ready to start Milestone 7:
 
-1. ✅ **Milestone 1–6 Complete!**
-2. 🎯 PDF generation for invoices
-3. 🎯 S3 upload for PDFs
-4. 🎯 Branded template (logo, company info)
-5. 🎯 View/Download PDF in UI
+✅ **All 10 Milestones Complete — Project ready for production!**
+
+See `DEPLOYMENT.md` for the full deployment guide.
 
 ---
 
@@ -220,9 +242,20 @@ Ready to start Milestone 7:
 - `MILESTONE_4_COMPLETE.md` - Week 4 completion summary (Clients Module)
 - `MILESTONE_5_COMPLETE.md` - Week 5 completion summary (Products & Services + Business Settings)
 - `MILESTONE_6_COMPLETE.md` - Week 6 completion summary (Invoicing System Core)
+- `MILESTONE_7_COMPLETE.md` - Week 7 completion summary (PDF Generation & Storage)
+- `MILESTONE_8_COMPLETE.md` - Week 8 completion summary (Timesheets & Expenses)
+- `MILESTONE_9_COMPLETE.md` - Week 9 completion summary (Email & Client Portal)
+- `MILESTONE_10_COMPLETE.md` - Week 10 completion summary (Testing & Deployment)
+- `DEPLOYMENT.md` - Full production deployment guide
 - `CONTRIBUTING.md` - Contribution guidelines
 - `KNOWN_ISSUES.md` - Known issues and workarounds
 
 ---
 
 **Built with ❤️ for efficient business management**
+
+
+✅ Admin user ready:
+   Email:    admin@flowbiz.local
+   Password: FlowBizAdmin123!
+   Role:     ADMIN
