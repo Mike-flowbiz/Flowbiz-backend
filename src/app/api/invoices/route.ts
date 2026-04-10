@@ -32,7 +32,9 @@ export const GET = withAuth(async (request: NextRequest, user) => {
     const status = searchParams.get('status');
     const clientId = searchParams.get('clientId');
 
-    const where: { status?: InvoiceStatus; clientId?: string } = {};
+    const where: { userId: string; status?: InvoiceStatus; clientId?: string } = {
+      userId: user.id,
+    };
     if (status && Object.values(InvoiceStatus).includes(status as InvoiceStatus)) {
       where.status = status as InvoiceStatus;
     }

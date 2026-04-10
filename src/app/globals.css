@@ -1,32 +1,261 @@
 @import 'tailwindcss';
 
+/* ══════════════════════════════════════════════════════════════
+   FLOWBIZ — DARK WEB3 THEME
+   Single-file CSS override strategy: all Tailwind utility classes
+   used in the app are remapped to dark-theme equivalents here.
+   No component logic is touched.
+══════════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background:    #05050f;
+  --foreground:    #e2e8f0;
+  --card-bg:       #0e0e1c;
+  --card-border:   rgba(255,255,255,0.08);
+  --sidebar-bg:    #080813;
+  --accent:        #6366f1;
+  --accent-2:      #8b5cf6;
+  --accent-glow:   rgba(99,102,241,0.25);
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-foreground:  var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-/* App uses light UI (white modals/cards); keep dark text for readability.
-   Remove dark-mode override so text is never light-on-light. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── BASE ───────────────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-input,
-select,
-textarea {
-  color: #171717;
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.55); }
+
+/* ── INPUTS ─────────────────────────────────────────────────── */
+input, select, textarea {
+  color: #f1f5f9;
+  background-color: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+input::placeholder, textarea::placeholder {
+  color: rgba(226,232,240,0.3);
+}
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: rgba(99,102,241,0.6) !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important;
+  background-color: rgba(255,255,255,0.07) !important;
+}
+/* date input calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+}
+/* checkbox accent */
+input[type="checkbox"] {
+  accent-color: #6366f1;
+}
+/* select option bg */
+select option {
+  background: #0e0e1c;
+  color: #f1f5f9;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #6b7280;
+/* ══════════════════════════════════════════════════════════════
+   BACKGROUND OVERRIDES
+══════════════════════════════════════════════════════════════ */
+
+/* Full-page wrappers */
+.min-h-screen                { background: var(--background) !important; }
+.bg-gray-50                  { background-color: rgba(255,255,255,0.025) !important; }
+.bg-white                    { background-color: var(--card-bg) !important; }
+.bg-gray-100                 { background-color: rgba(255,255,255,0.07) !important; }
+.bg-gray-200                 { background-color: rgba(255,255,255,0.1) !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   TEXT OVERRIDES
+══════════════════════════════════════════════════════════════ */
+.text-gray-900               { color: #f1f5f9 !important; }
+.text-gray-800               { color: rgba(226,232,240,0.9) !important; }
+.text-gray-700               { color: rgba(226,232,240,0.78) !important; }
+.text-gray-600               { color: rgba(226,232,240,0.58) !important; }
+.text-gray-500               { color: rgba(226,232,240,0.42) !important; }
+.text-gray-400               { color: rgba(226,232,240,0.32) !important; }
+.text-gray-300               { color: rgba(226,232,240,0.22) !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   BORDER OVERRIDES
+══════════════════════════════════════════════════════════════ */
+.border-gray-200             { border-color: var(--card-border) !important; }
+.border-gray-300             { border-color: rgba(255,255,255,0.12) !important; }
+.border-t                    { border-top-color: rgba(255,255,255,0.07) !important; }
+.border-b                    { border-bottom-color: rgba(255,255,255,0.07) !important; }
+.border-r                    { border-right-color: rgba(255,255,255,0.07) !important; }
+.divide-gray-200 > * + *     { border-color: rgba(255,255,255,0.05) !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   SHADOW OVERRIDES
+══════════════════════════════════════════════════════════════ */
+.shadow                      { box-shadow: 0 1px 4px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06) !important; }
+.shadow-sm                   { box-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) !important; }
+.shadow-xl                   { box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08) !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   HOVER OVERRIDES
+══════════════════════════════════════════════════════════════ */
+.hover\:bg-gray-50:hover     { background-color: rgba(255,255,255,0.04) !important; }
+.hover\:bg-gray-100:hover    { background-color: rgba(255,255,255,0.07) !important; }
+.hover\:bg-gray-200:hover    { background-color: rgba(255,255,255,0.1) !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   PRIMARY ACCENT — INDIGO/VIOLET
+══════════════════════════════════════════════════════════════ */
+.bg-blue-600                 {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  box-shadow: 0 0 20px rgba(99,102,241,0.35);
+}
+.hover\:bg-blue-700:hover    {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  box-shadow: 0 0 28px rgba(99,102,241,0.5) !important;
+}
+.bg-blue-500                 { background: linear-gradient(180deg, #818cf8, #6366f1) !important; }
+
+/* Blue text/links */
+.text-blue-600               { color: #818cf8 !important; }
+.text-blue-700               { color: #818cf8 !important; }
+.text-blue-800               { color: #a5b4fc !important; }
+.hover\:text-blue-500:hover  { color: #a78bfa !important; }
+.hover\:text-blue-700:hover  { color: #a78bfa !important; }
+.hover\:text-blue-900:hover  { color: #c4b5fd !important; }
+
+/* focus ring */
+.focus\:ring-blue-500:focus  { --tw-ring-color: rgba(99,102,241,0.4) !important; }
+.focus\:border-blue-500:focus { border-color: rgba(99,102,241,0.6) !important; }
+
+/* Blue tinted backgrounds (nav active state, badges) */
+.bg-blue-50                  { background-color: rgba(99,102,241,0.12) !important; }
+.bg-blue-100                 { background-color: rgba(99,102,241,0.15) !important; }
+.text-blue-800               { color: #818cf8 !important; }
+
+/* Active timer indicator */
+.bg-blue-500.animate-pulse   { background-color: #6366f1 !important; }
+.text-blue-800               { color: #a5b4fc !important; }
+
+/* Spinner */
+.border-blue-600             { border-color: #6366f1 !important; }
+.border-b-2.border-blue-600  { border-bottom-color: #6366f1 !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   STATUS COLOURS — kept readable on dark backgrounds
+══════════════════════════════════════════════════════════════ */
+
+/* Green */
+.bg-green-50                 { background-color: rgba(52,211,153,0.07) !important; }
+.bg-green-100                { background-color: rgba(52,211,153,0.12) !important; }
+.bg-green-500                { background-color: #059669 !important; }
+.text-green-500              { color: #34d399 !important; }
+.text-green-600              { color: #34d399 !important; }
+.text-green-700              { color: #34d399 !important; }
+.text-green-800              { color: #34d399 !important; }
+.border-green-200            { border-color: rgba(52,211,153,0.25) !important; }
+.hover\:text-green-900:hover { color: #6ee7b7 !important; }
+
+/* Red */
+.bg-red-50                   { background-color: rgba(248,113,113,0.07) !important; }
+.bg-red-100                  { background-color: rgba(248,113,113,0.12) !important; }
+.bg-red-600                  { background-color: #dc2626 !important; box-shadow: none !important; }
+.hover\:bg-red-700:hover     { background-color: #b91c1c !important; }
+.text-red-500                { color: #f87171 !important; }
+.text-red-600                { color: #f87171 !important; }
+.text-red-700                { color: #f87171 !important; }
+.text-red-800                { color: #fca5a5 !important; }
+.border-red-200              { border-color: rgba(248,113,113,0.25) !important; }
+.hover\:text-red-700:hover   { color: #f87171 !important; }
+.hover\:text-red-900:hover   { color: #fca5a5 !important; }
+
+/* Yellow */
+.bg-yellow-100               { background-color: rgba(251,191,36,0.12) !important; }
+.bg-yellow-500               { background-color: #d97706 !important; }
+.text-yellow-700             { color: #fbbf24 !important; }
+.text-yellow-800             { color: #fcd34d !important; }
+
+/* Purple */
+.bg-purple-100               { background-color: rgba(167,139,250,0.12) !important; }
+.bg-purple-500               { background-color: #7c3aed !important; }
+.text-purple-700             { color: #c4b5fd !important; }
+.text-purple-800             { color: #ddd6fe !important; }
+
+/* Indigo */
+.bg-indigo-100               { background-color: rgba(129,140,248,0.12) !important; }
+.text-indigo-700             { color: #a5b4fc !important; }
+.text-indigo-800             { color: #c7d2fe !important; }
+
+/* Orange */
+.bg-orange-100               { background-color: rgba(251,146,60,0.12) !important; }
+.text-orange-700             { color: #fb923c !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   MODAL OVERLAY
+══════════════════════════════════════════════════════════════ */
+.bg-gray-500                 { background-color: rgba(0,0,0,0.7) !important; }
+.bg-gray-600                 { background-color: rgba(0,0,0,0.8) !important; }
+/* Override opacity helper so the overlay is fully visible */
+.bg-opacity-75               { opacity: 1 !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   CHART BARS
+══════════════════════════════════════════════════════════════ */
+/* The bar track in the revenue chart */
+.bg-gray-100.rounded-md.overflow-hidden { background-color: rgba(255,255,255,0.05) !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   ACTIVE TIMER CARD  (timesheets page)
+══════════════════════════════════════════════════════════════ */
+.bg-blue-50.border.border-blue-200.rounded-xl {
+  background-color: rgba(99,102,241,0.08) !important;
+  border-color: rgba(99,102,241,0.3) !important;
+  box-shadow: 0 0 30px rgba(99,102,241,0.1) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FILE UPLOAD DRAG AREA
+══════════════════════════════════════════════════════════════ */
+.border-dashed.border-gray-300 {
+  border-color: rgba(255,255,255,0.15) !important;
+  background-color: rgba(255,255,255,0.025) !important;
+}
+.hover\:border-blue-400:hover {
+  border-color: rgba(99,102,241,0.5) !important;
+}
+.hover\:bg-blue-50:hover {
+  background-color: rgba(99,102,241,0.06) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MISC UTILITIES
+══════════════════════════════════════════════════════════════ */
+/* Ensure focus ring offset is dark */
+.focus\:ring-offset-2:focus  { --tw-ring-offset-color: #05050f !important; }
+
+/* Portal expand/collapse rows */
+.hover\:bg-gray-50.cursor-pointer:hover {
+  background-color: rgba(255,255,255,0.03) !important;
+}
+
+/* Page grid background (applied to main dashboard wrapper) */
+.fb-page-grid {
+  background-image:
+    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
 }

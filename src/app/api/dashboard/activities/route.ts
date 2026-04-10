@@ -5,6 +5,7 @@ import { withAuth } from '@/lib/middleware/auth';
 export const GET = withAuth(async (request: NextRequest, user) => {
   try {
     const recentInvoices = await prisma.invoice.findMany({
+      where: { userId: user.id },
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { client: { select: { name: true } } },

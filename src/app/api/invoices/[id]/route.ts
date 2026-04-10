@@ -36,6 +36,14 @@ export async function GET(
       );
     }
 
+    // Ensure the invoice belongs to the authenticated user
+    if (invoice.userId !== authResult.user.id) {
+      return NextResponse.json(
+        { error: 'Invoice not found' },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json({ invoice });
   } catch (error) {
     console.error('Get invoice error:', error);

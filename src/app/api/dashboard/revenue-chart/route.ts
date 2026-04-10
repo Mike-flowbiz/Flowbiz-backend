@@ -13,6 +13,7 @@ export const GET = withAuth(async (request: NextRequest, user) => {
 
       const revenue = await prisma.invoice.aggregate({
         where: {
+          userId: user.id,
           status: 'PAID',
           paidAt: { gte: date, lt: nextMonth },
         },

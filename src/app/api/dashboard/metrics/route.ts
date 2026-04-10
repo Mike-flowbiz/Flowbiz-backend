@@ -9,40 +9,43 @@ export const GET = withAuth(async (request: NextRequest, user) => {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    // Current month revenue
+    // Current month revenue (current user only)
     const currentMonthRevenue = await prisma.invoice.aggregate({
       where: {
+        userId: user.id,
         status: 'PAID',
         paidAt: { gte: startOfMonth },
       },
       _sum: { total: true },
     });
 
-    // Last month revenue
+    // Last month revenue (current user only)
     const lastMonthRevenue = await prisma.invoice.aggregate({
       where: {
+        userId: user.id,
         status: 'PAID',
         paidAt: { gte: startOfLastMonth, lte: endOfLastMonth },
       },
       _sum: { total: true },
     });
 
-    // Pending invoices
+    // Pending invoices (current user only)
     const pendingInvoices = await prisma.invoice.aggregate({
-      where: { status: { in: ['SENT', 'OVERDUE'] } },
+      where: { userId: user.id, status: { in: ['SENT', 'OVERDUE'] } },
       _sum: { total: true },
       _count: true,
     });
 
-    // Overdue invoices
+    // Overdue invoices (current user only)
     const overdueInvoices = await prisma.invoice.count({
       where: {
+        userId: user.id,
         status: 'OVERDUE',
         dueDate: { lt: now },
       },
     });
 
-    // Total clients
+    // Total active clients (shared company-wide)
     const totalClients = await prisma.client.count({
       where: { isActive: true },
     });
