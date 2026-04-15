@@ -12,15 +12,8 @@ export const POST = withAuthz(
     const { id } = await params;
 
     try {
-      if (!isEmailConfigured()) {
-        return NextResponse.json(
-          {
-            error:
-              'Email is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS in your environment variables.',
-          },
-          { status: 503 }
-        );
-      }
+      // SMTP config check is now handled inside sendEmail() which reads
+      // from both env vars and DB settings. We let it throw if not configured.
 
       const invoice = await prisma.invoice.findUnique({
         where: { id },

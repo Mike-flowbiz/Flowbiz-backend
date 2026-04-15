@@ -33,6 +33,12 @@ export const PUT = withAuthz(['ADMIN'], async (request: NextRequest, user) => {
       bankName,
       accountNumber,
       sortCode,
+      smtpHost,
+      smtpPort,
+      smtpSecure,
+      smtpUser,
+      smtpPass,
+      smtpFrom,
     } = body;
 
     if (!companyName) {
@@ -52,6 +58,15 @@ export const PUT = withAuthz(['ADMIN'], async (request: NextRequest, user) => {
     // Find existing settings or create new
     const existing = await prisma.businessSetting.findFirst();
     
+    const smtpData = {
+      ...(smtpHost !== undefined ? { smtpHost: smtpHost || null } : {}),
+      ...(smtpPort !== undefined ? { smtpPort: smtpPort || '587' } : {}),
+      ...(smtpSecure !== undefined ? { smtpSecure: !!smtpSecure } : {}),
+      ...(smtpUser !== undefined ? { smtpUser: smtpUser || null } : {}),
+      ...(smtpPass !== undefined ? { smtpPass: smtpPass || null } : {}),
+      ...(smtpFrom !== undefined ? { smtpFrom: smtpFrom || null } : {}),
+    };
+
     const settings = existing
       ? await prisma.businessSetting.update({
           where: { id: existing.id },
@@ -68,6 +83,7 @@ export const PUT = withAuthz(['ADMIN'], async (request: NextRequest, user) => {
             bankName,
             accountNumber,
             sortCode,
+            ...smtpData,
           },
         })
       : await prisma.businessSetting.create({
@@ -84,6 +100,7 @@ export const PUT = withAuthz(['ADMIN'], async (request: NextRequest, user) => {
             bankName,
             accountNumber,
             sortCode,
+            ...smtpData,
           },
         });
 

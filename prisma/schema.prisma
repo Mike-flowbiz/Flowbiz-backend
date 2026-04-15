@@ -20,6 +20,12 @@ model BusinessSetting {
   bankName       String?
   accountNumber  String?
   sortCode       String?
+  smtpHost       String?
+  smtpPort       String?  @default("587")
+  smtpSecure     Boolean  @default(false)
+  smtpUser       String?
+  smtpPass       String?
+  smtpFrom       String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

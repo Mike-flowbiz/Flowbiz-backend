@@ -129,6 +129,11 @@ export async function PUT(
     if (notes !== undefined) updateData.notes = notes?.trim?.() || null;
     if (status !== undefined && Object.values(InvoiceStatus).includes(status)) {
       updateData.status = status as InvoiceStatus;
+      if (status === 'PAID') {
+        (updateData as any).paidAt = new Date();
+      } else if (existing.status === 'PAID' && status !== 'PAID') {
+        (updateData as any).paidAt = null;
+      }
     }
 
     if (items !== undefined) {

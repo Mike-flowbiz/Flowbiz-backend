@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { prisma } from '@/lib/prisma';
 
 export interface SendEmailOptions {
   to: string;
@@ -20,30 +21,71 @@ export function isEmailConfigured(): boolean {
   );
 }
 
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: getEnv('SMTP_HOST', 'EMAIL_HOST'),
-    port: parseInt(getEnv('SMTP_PORT', 'EMAIL_PORT') || '587', 10),
-    secure: (getEnv('SMTP_SECURE', 'EMAIL_SECURE') || 'false') === 'true',
-    auth: {
-      user: getEnv('SMTP_USER', 'EMAIL_USER'),
-      pass: getEnv('SMTP_PASS', 'EMAIL_PASSWORD'),
-    },
-  });
+async function getSmtpConfig(): Promise<{
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  from: string;
+} | null> {
+  // 1. Try environment variables first
+  const envHost = getEnv('SMTP_HOST', 'EMAIL_HOST');
+  const envUser = getEnv('SMTP_USER', 'EMAIL_USER');
+  const envPass = getEnv('SMTP_PASS', 'EMAIL_PASSWORD');
+
+  if (envHost && envUser && envPass) {
+    return {
+      host: envHost,
+      port: parseInt(getEnv('SMTP_PORT', 'EMAIL_PORT') || '587', 10),
+      secure: (getEnv('SMTP_SECURE', 'EMAIL_SECURE') || 'false') === 'true',
+      user: envUser,
+      pass: envPass,
+      from: getEnv('SMTP_FROM', 'EMAIL_FROM') || envUser,
+    };
+  }
+
+  // 2. Fallback to database settings
+  try {
+    const settings = await prisma.businessSetting.findFirst();
+    if (settings?.smtpHost && settings?.smtpUser && settings?.smtpPass) {
+      return {
+        host: settings.smtpHost,
+        port: parseInt(settings.smtpPort || '587', 10),
+        secure: settings.smtpSecure,
+        user: settings.smtpUser,
+        pass: settings.smtpPass,
+        from: settings.smtpFrom || settings.smtpUser,
+      };
+    }
+  } catch {
+    // DB not available, fall through
+  }
+
+  return null;
 }
 
 export async function sendEmail(options: SendEmailOptions): Promise<void> {
-  if (!isEmailConfigured()) {
-    throw new Error('Email (SMTP) is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS environment variables.');
+  const config = await getSmtpConfig();
+
+  if (!config) {
+    throw new Error(
+      'Email (SMTP) is not configured. Go to Settings → Email Configuration to set up SMTP, or set SMTP_HOST, SMTP_USER, and SMTP_PASS environment variables.'
+    );
   }
 
-  const transporter = createTransporter();
-  const from =
-    getEnv('SMTP_FROM', 'EMAIL_FROM') ||
-    getEnv('SMTP_USER', 'EMAIL_USER');
+  const transporter = nodemailer.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.secure,
+    auth: {
+      user: config.user,
+      pass: config.pass,
+    },
+  });
 
   await transporter.sendMail({
-    from,
+    from: config.from,
     to: options.to,
     subject: options.subject,
     html: options.html,
