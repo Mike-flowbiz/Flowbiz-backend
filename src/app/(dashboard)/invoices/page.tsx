@@ -78,12 +78,9 @@ export default function InvoicesPage() {
   const [settings, setSettings] = useState<{ vatRate?: number } | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
-  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [clientId, setClientId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
-  const [status, setStatus] = useState<string>('DRAFT');
   const [lineItems, setLineItems] = useState<LineItemForm[]>([emptyLineItem()]);
   const [formError, setFormError] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
@@ -152,42 +149,16 @@ export default function InvoicesPage() {
   const vatRate = settings?.vatRate ?? VAT_RATE_DEFAULT;
 
   const openAddModal = () => {
-    setModalMode('add');
-    setEditingInvoice(null);
     setClientId('');
     setDueDate('');
     setNotes('');
-    setStatus('DRAFT');
     setLineItems([emptyLineItem()]);
-    setFormError(null);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (inv: Invoice) => {
-    setModalMode('edit');
-    setEditingInvoice(inv);
-    setClientId(inv.clientId);
-    setDueDate(inv.dueDate.slice(0, 10));
-    setNotes(inv.notes || '');
-    setStatus(inv.status);
-    setLineItems(
-      inv.invoiceItems.length > 0
-        ? inv.invoiceItems.map((item) => ({
-          tempId: item.id,
-          productId: item.productId || '',
-          description: item.description,
-          quantity: String(item.quantity),
-          unitPrice: String(item.unitPrice),
-        }))
-        : [emptyLineItem()]
-    );
     setFormError(null);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setEditingInvoice(null);
     setFormError(null);
   };
 
@@ -261,18 +232,11 @@ export default function InvoicesPage() {
 
     setFormLoading(true);
     try {
-      const url = modalMode === 'add' ? '/api/invoices' : `/api/invoices/${editingInvoice?.id}`;
-      const method = modalMode === 'add' ? 'POST' : 'PUT';
-      const body =
-        modalMode === 'add'
-          ? { clientId, dueDate: dueDate || undefined, notes: notes.trim() || undefined, items }
-          : { clientId, dueDate: dueDate || undefined, notes: notes.trim() || undefined, status, items };
-
-      const res = await fetch(url, {
-        method,
+      const res = await fetch('/api/invoices', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(body),
+        body: JSON.stringify({ clientId, dueDate: dueDate || undefined, notes: notes.trim() || undefined, items }),
       });
 
       const data = await res.json();
@@ -642,15 +606,15 @@ export default function InvoicesPage() {
                             </svg>
                           )}
                         </button>
-                        <button
-                          onClick={() => openEditModal(inv)}
+                        <Link
+                          href={`/invoices/${inv.id}/edit`}
                           className="text-blue-600 hover:text-blue-900"
                           title="Edit invoice"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
-                        </button>
+                        </Link>
                         <button
                           onClick={() => setDeleteConfirm(inv)}
                           className="text-red-600 hover:text-red-900"
@@ -686,7 +650,7 @@ export default function InvoicesPage() {
             <div className="relative inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle bg-white rounded-xl shadow-xl transform transition-all">
               <div className="flex justify-between items-center p-6 border-b">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {modalMode === 'add' ? 'Create Invoice' : 'Edit Invoice'}
+                  Create Invoice
                 </h3>
                 <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -730,22 +694,6 @@ export default function InvoicesPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
-                  {modalMode === 'edit' && (
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                      <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="DRAFT">Draft</option>
-                        <option value="SENT">Sent</option>
-                        <option value="PAID">Paid</option>
-                        <option value="OVERDUE">Overdue</option>
-                        <option value="CANCELLED">Cancelled</option>
-                      </select>
-                    </div>
-                  )}
                 </div>
 
                 <div>
@@ -888,7 +836,7 @@ export default function InvoicesPage() {
                     {formLoading && (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                     )}
-                    {modalMode === 'add' ? 'Create Invoice' : 'Save Changes'}
+                    Create Invoice
                   </button>
                 </div>
               </form>
