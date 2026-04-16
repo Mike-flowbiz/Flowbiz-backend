@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, createAuthResponse, createAuthzResponse } from '@/lib/middleware/auth';
 import { parseFileField, validateImageFile, fileToBuffer } from '@/lib/middleware/upload';
 import { uploadLogo, isS3Configured } from '@/backend/utils/s3';
+import { saveBlobUpload, isBlobConfigured } from '@/backend/utils/blobUpload';
 import { savePublicUpload } from '@/backend/utils/localUpload';
 
 export async function POST(request: NextRequest) {
@@ -31,14 +32,23 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = await fileToBuffer(file);
-    const logoUrl = isS3Configured()
-      ? await uploadLogo(buffer, file.name, file.type)
-      : await savePublicUpload(buffer, 'logos', file.name);
+    let logoUrl: string;
+    let storage: 's3' | 'blob' | 'local';
+    if (isS3Configured()) {
+      logoUrl = await uploadLogo(buffer, file.name, file.type);
+      storage = 's3';
+    } else if (isBlobConfigured()) {
+      logoUrl = await saveBlobUpload(buffer, 'logos', file.name, file.type);
+      storage = 'blob';
+    } else {
+      logoUrl = await savePublicUpload(buffer, 'logos', file.name);
+      storage = 'local';
+    }
 
     return NextResponse.json({
       message: 'Logo uploaded successfully',
       url: logoUrl,
-      storage: isS3Configured() ? 's3' : 'local',
+      storage,
     });
   } catch (error: any) {
     console.error('Logo upload error:', error);

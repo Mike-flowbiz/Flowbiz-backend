@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, createAuthResponse, createAuthzResponse } from '@/lib/middleware/auth';
 import { parseFileField, validateReceiptFile, fileToBuffer } from '@/lib/middleware/upload';
 import { uploadReceipt, isS3Configured } from '@/backend/utils/s3';
+import { saveBlobUpload, isBlobConfigured } from '@/backend/utils/blobUpload';
 import { savePublicUpload } from '@/backend/utils/localUpload';
 
 export async function POST(request: NextRequest) {
@@ -31,14 +32,23 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = await fileToBuffer(file);
-    const receiptUrl = isS3Configured()
-      ? await uploadReceipt(buffer, file.name, file.type)
-      : await savePublicUpload(buffer, 'receipts', file.name);
+    let receiptUrl: string;
+    let storage: 's3' | 'blob' | 'local';
+    if (isS3Configured()) {
+      receiptUrl = await uploadReceipt(buffer, file.name, file.type);
+      storage = 's3';
+    } else if (isBlobConfigured()) {
+      receiptUrl = await saveBlobUpload(buffer, 'receipts', file.name, file.type);
+      storage = 'blob';
+    } else {
+      receiptUrl = await savePublicUpload(buffer, 'receipts', file.name);
+      storage = 'local';
+    }
 
     return NextResponse.json({
       message: 'Receipt uploaded successfully',
       url: receiptUrl,
-      storage: isS3Configured() ? 's3' : 'local',
+      storage,
     });
   } catch (error: any) {
     console.error('Receipt upload error:', error);
