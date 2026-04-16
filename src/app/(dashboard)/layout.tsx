@@ -271,48 +271,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* ── MAIN CONTENT ─────────────────────────────────── */}
         <div className="lg:pl-64">
-          {/* Top bar (mobile only) */}
-          <div style={{
-            position: 'sticky', top: 0, zIndex: 10,
-            height: 60,
-            background: 'rgba(5,5,15,0.9)',
-            backdropFilter: 'blur(16px)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            display: 'flex', alignItems: 'center',
-          }} className="lg:hidden">
-            <button
-              type="button"
-              aria-label={sidebarOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              onClick={() => setSidebarOpen((prev) => !prev)}
-              style={{
-                padding: '0 16px', color: 'rgba(226,232,240,0.6)',
-                background: 'none', border: 'none', cursor: 'pointer',
-              }}
-            >
-              <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <div style={{ flex: 1, padding: '0 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 26, height: 26, borderRadius: 7,
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <polyline points="9 22 9 12 15 12 15 22" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <span style={{
-                fontSize: 18, fontWeight: 700,
-                background: 'linear-gradient(90deg, #a78bfa, #60a5fa)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              }}>
-                FlowBiz
-              </span>
-            </div>
-          </div>
+          
 
           {/* Page content with subtle grid */}
           <main className="fb-page-grid" style={{ padding: '28px 32px', minHeight: 'calc(100vh - 60px)' }}>

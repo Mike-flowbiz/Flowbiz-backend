@@ -8,6 +8,7 @@ interface InvoiceWithDetails extends Invoice {
 }
 
 async function fetchImageAsDataUrl(url: string): Promise<string | null> {
+  if (url.startsWith('data:')) return url;
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
     if (!response.ok) return null;
@@ -37,17 +38,26 @@ export const generateInvoicePDF = async (
   // --- Header ---
   // Try to embed company logo; fall back to company name text
   let companyDetailsY = 30;
-  if (settings?.logo) {
-    const logoDataUrl = await fetchImageAsDataUrl(settings.logo);
-    if (logoDataUrl) {
-      doc.addImage(logoDataUrl, 20, 10, 42, 15);
-      companyDetailsY = 29;
-    } else {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(22);
-      doc.setTextColor(primaryColor);
-      doc.text(settings?.companyName || 'FlowBiz', 20, 20);
+  const logoDataUrl = settings?.logo ? await fetchImageAsDataUrl(settings.logo) : null;
+  if (logoDataUrl) {
+    const logoX = 20;
+    const logoY = 10;
+    const maxW = 45;
+    const maxH = 20;
+    let drawW = maxW;
+    let drawH = maxH;
+    try {
+      const props = doc.getImageProperties(logoDataUrl);
+      if (props.width > 0 && props.height > 0) {
+        const scale = Math.min(maxW / props.width, maxH / props.height);
+        drawW = props.width * scale;
+        drawH = props.height * scale;
+      }
+    } catch {
+      // fall through with max box if properties can't be read
     }
+    doc.addImage(logoDataUrl, logoX, logoY, drawW, drawH);
+    companyDetailsY = logoY + drawH + 4;
   } else {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
