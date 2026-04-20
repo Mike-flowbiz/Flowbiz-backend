@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { prisma } from '@/lib/prisma';
 import { withAuthz } from '@/lib/middleware/auth';
 import { UserRole } from '@prisma/client';
+import { sendEmail, buildClientWelcomeEmail } from '@/backend/utils/email';
 
 // GET /api/users - List all users (ADMIN only)
 export const GET = withAuthz([UserRole.ADMIN], async () => {
@@ -49,27 +50,74 @@ export const POST = withAuthz([UserRole.ADMIN], async (request: NextRequest) => 
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const normalizedEmail = email.trim().toLowerCase();
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
 
-    const user = await prisma.user.create({
-      data: {
-        email: email.trim().toLowerCase(),
-        password: hashedPassword,
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        role: assignedRole,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true,
-        _count: { select: { invoices: true, expenses: true, timesheets: true } },
-      },
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email: normalizedEmail,
+          password: hashedPassword,
+          firstName: trimmedFirstName,
+          lastName: trimmedLastName,
+          role: assignedRole,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          createdAt: true,
+          _count: { select: { invoices: true, expenses: true, timesheets: true } },
+        },
+      });
+
+      if (assignedRole === UserRole.CLIENT) {
+        await tx.client.upsert({
+          where: { email: normalizedEmail },
+          update: {},
+          create: {
+            email: normalizedEmail,
+            name: `${trimmedFirstName} ${trimmedLastName}`,
+          },
+        });
+      }
+
+      return created;
     });
 
-    return NextResponse.json({ message: 'User created', user }, { status: 201 });
+    let emailWarning: string | undefined;
+    if (assignedRole === UserRole.CLIENT) {
+      try {
+        const settings = await prisma.businessSetting.findFirst();
+        const companyName = settings?.companyName || 'FlowBiz';
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const html = buildClientWelcomeEmail({
+          firstName: trimmedFirstName,
+          email: normalizedEmail,
+          password,
+          loginUrl: `${appUrl}/login`,
+          companyName,
+          primaryColor: settings?.primaryColor,
+        });
+        await sendEmail({
+          to: normalizedEmail,
+          subject: `Your ${companyName} client portal access`,
+          html,
+        });
+      } catch (emailError) {
+        console.error('Client welcome email error:', emailError);
+        emailWarning =
+          'Client user created, but the welcome email failed to send. Share the credentials manually.';
+      }
+    }
+
+    return NextResponse.json(
+      emailWarning ? { message: 'User created', user, warning: emailWarning } : { message: 'User created', user },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Create user error:', error);
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });

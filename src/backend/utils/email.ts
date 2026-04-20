@@ -215,6 +215,76 @@ export function buildInvoiceEmail(data: InvoiceEmailData): string {
 </html>`;
 }
 
+interface ClientWelcomeEmailData {
+  firstName: string;
+  email: string;
+  password: string;
+  loginUrl: string;
+  companyName: string;
+  primaryColor?: string | null;
+}
+
+export function buildClientWelcomeEmail(data: ClientWelcomeEmailData): string {
+  const color = data.primaryColor || '#3B82F6';
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr>
+          <td style="background:${color};padding:32px 40px;">
+            <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700;">${data.companyName}</h1>
+            <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Your client portal is ready</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:16px;">Hi <strong>${data.firstName}</strong>,</p>
+            <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">
+              An account has been created for you on the ${data.companyName} client portal. Use the credentials below to sign in and view your invoices.
+            </p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:8px;padding:24px;margin-bottom:32px;">
+              <tr>
+                <td style="color:#6b7280;font-size:13px;padding-bottom:8px;">Email</td>
+                <td style="color:#111827;font-size:13px;font-weight:600;text-align:right;padding-bottom:8px;">${data.email}</td>
+              </tr>
+              <tr>
+                <td style="color:#6b7280;font-size:13px;">Temporary password</td>
+                <td style="color:#111827;font-size:13px;font-weight:600;text-align:right;font-family:monospace;">${data.password}</td>
+              </tr>
+            </table>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+              <tr>
+                <td align="center">
+                  <a href="${data.loginUrl}" style="display:inline-block;padding:14px 32px;background:${color};color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">Sign in to your portal</a>
+                </td>
+              </tr>
+            </table>
+
+            <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:16px;border-radius:4px;">
+              <p style="margin:0;color:#991b1b;font-size:13px;font-weight:600;">Security Notice</p>
+              <p style="margin:6px 0 0;color:#7f1d1d;font-size:13px;">
+                For your security, please change this temporary password after your first sign-in.
+              </p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
+            <p style="margin:0;color:#9ca3af;font-size:12px;text-align:center;">${data.companyName} · This is an automated message, please do not reply.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 export function buildPasswordResetEmail(resetUrl: string, firstName: string): string {
   return `<!DOCTYPE html>
 <html>

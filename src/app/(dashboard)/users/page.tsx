@@ -79,6 +79,9 @@ export default function UsersPage() {
       setUsers(prev => [...prev, data.user]);
       setShowCreate(false);
       setCreateForm(EMPTY_FORM);
+      if (data.warning) {
+        alert(data.warning);
+      }
     } catch (e: unknown) {
       setFormError(e instanceof Error ? e.message : 'Error');
     } finally {
