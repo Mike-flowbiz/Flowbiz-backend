@@ -255,6 +255,7 @@ See `DEPLOYMENT.md` for the full deployment guide.
 **Built with ❤️ for efficient business management**
 
 
+
 ✅ Admin user ready:
    Email:    admin@flowbiz.local
    Password: FlowBizAdmin123!
