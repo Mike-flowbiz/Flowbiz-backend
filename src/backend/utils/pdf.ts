@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import sharp from 'sharp';
 import { BusinessSetting, Client, Invoice, InvoiceItem, Product } from '@prisma/client';
 
 interface InvoiceWithDetails extends Invoice {
@@ -7,15 +8,45 @@ interface InvoiceWithDetails extends Invoice {
   invoiceItems: (InvoiceItem & { product: Product | null })[];
 }
 
-async function fetchImageAsDataUrl(url: string): Promise<string | null> {
-  if (url.startsWith('data:')) return url;
+// Cap embedded logos so older oversized uploads don't bloat the PDF/email.
+async function shrinkLogoBuffer(buffer: Buffer, mime: string): Promise<{ buffer: Buffer; mime: string }> {
   try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!response.ok) return null;
-    const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
-    const contentType = response.headers.get('content-type') || 'image/png';
-    return `data:${contentType};base64,${base64}`;
+    const isPng = mime === 'image/png';
+    const pipeline = sharp(buffer).resize({
+      width: 100,
+      height: 100,
+      fit: 'inside',
+      withoutEnlargement: true,
+    });
+    const out = isPng
+      ? await pipeline.png({ compressionLevel: 9 }).toBuffer()
+      : await pipeline.jpeg({ quality: 85, mozjpeg: true }).toBuffer();
+    return { buffer: out, mime: isPng ? 'image/png' : 'image/jpeg' };
+  } catch {
+    return { buffer, mime };
+  }
+}
+
+async function fetchImageAsDataUrl(url: string): Promise<string | null> {
+  try {
+    let rawBuffer: Buffer;
+    let contentType: string;
+
+    if (url.startsWith('data:')) {
+      const match = url.match(/^data:([^;]+);base64,(.+)$/);
+      if (!match) return url;
+      contentType = match[1];
+      rawBuffer = Buffer.from(match[2], 'base64');
+    } else {
+      const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!response.ok) return null;
+      const arrayBuffer = await response.arrayBuffer();
+      rawBuffer = Buffer.from(arrayBuffer);
+      contentType = response.headers.get('content-type') || 'image/png';
+    }
+
+    const { buffer, mime } = await shrinkLogoBuffer(rawBuffer, contentType);
+    return `data:${mime};base64,${buffer.toString('base64')}`;
   } catch {
     return null;
   }
