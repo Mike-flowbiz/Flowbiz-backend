@@ -718,9 +718,12 @@ export default function InvoicesPage() {
                       + Add line
                     </button>
                   </div>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Tip: leave Product as None to enter a custom line item, or pick a product and edit the description to fit this invoice.
+                  </p>
                   <div className="fb-line-items-wrap border rounded-lg overflow-hidden">
                     <div className="fb-line-item fb-line-head">
-                      <div className="fb-line-product">Product</div>
+                      <div className="fb-line-product">Product (optional)</div>
                       <div className="fb-line-desc">Description *</div>
                       <div className="fb-line-qty">Qty</div>
                       <div className="fb-line-price">Unit Price</div>
@@ -742,7 +745,7 @@ export default function InvoicesPage() {
                               fillFromProduct(item.tempId, v);
                             }}
                           >
-                            <option value="">Product</option>
+                            <option value="">None (custom item)</option>
                             {products.map((prod) => (
                               <option key={prod.id} value={prod.id}>
                                 {prod.name} ({formatCurrency(prod.price)}/{prod.unit})
@@ -754,7 +757,7 @@ export default function InvoicesPage() {
                             className="fb-line-desc px-2 py-1.5 border border-gray-300 rounded text-sm"
                             value={item.description}
                             onChange={(e) => updateLineItem(item.tempId, 'description', e.target.value)}
-                            placeholder="Description"
+                            placeholder="e.g. Labour, materials, specific job details..."
                             required
                           />
                           <input

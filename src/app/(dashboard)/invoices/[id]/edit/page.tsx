@@ -397,7 +397,7 @@ export default function InvoiceEditPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <div className="md:col-span-3">
-                      <label className="block text-xs text-gray-500 mb-1">Product</label>
+                      <label className="block text-xs text-gray-500 mb-1">Product (optional)</label>
                       <select
                         value={item.productId}
                         onChange={(e) => {
@@ -406,7 +406,7 @@ export default function InvoiceEditPage() {
                         }}
                         className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                       >
-                        <option value="">Select product (optional)</option>
+                        <option value="">None (custom item)</option>
                         {products.map((prod) => (
                           <option key={prod.id} value={prod.id}>
                             {prod.name} ({formatCurrency(prod.price)}/{prod.unit})
@@ -421,7 +421,7 @@ export default function InvoiceEditPage() {
                         value={item.description}
                         onChange={(e) => updateLineItem(item.tempId, 'description', e.target.value)}
                         className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
-                        placeholder="What is this charge for?"
+                        placeholder="e.g. Labour, materials, specific job details..."
                         required
                       />
                     </div>
