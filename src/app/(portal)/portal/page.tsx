@@ -85,12 +85,29 @@ export default function PortalPage() {
   useEffect(() => { fetchInvoices(); }, [fetchInvoices]);
 
   const handleDownloadPdf = async (inv: Invoice) => {
-    if (inv.pdfUrl) {
-      window.open(inv.pdfUrl, '_blank');
-      return;
+    try {
+      setPdfLoading(inv.id);
+      const res = await fetch(`/api/portal/invoices/${inv.id}/pdf`, {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || 'Failed to download PDF');
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${inv.invoiceNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to download PDF');
+    } finally {
+      setPdfLoading(null);
     }
-    // Client cannot generate PDF themselves — just show message
-    alert('PDF not yet available for this invoice. Please contact us.');
   };
 
   const totalOutstanding = invoices
@@ -203,7 +220,7 @@ export default function PortalPage() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    {inv.pdfUrl ? 'PDF' : 'View'}
+                    {pdfLoading === inv.id ? 'Preparing…' : 'Download PDF'}
                   </button>
                   <svg
                     className={`w-5 h-5 text-gray-400 transition-transform ${expanded === inv.id ? 'rotate-180' : ''}`}

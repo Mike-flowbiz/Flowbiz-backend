@@ -77,14 +77,25 @@ export const GET = withAuthz(['ADMIN', 'CONTRACTOR'], async (request: NextReques
     try {
         const invoice = await prisma.invoice.findUnique({
             where: { id },
-            select: { pdfUrl: true },
+            select: { pdfUrl: true, invoiceNumber: true },
         });
 
         if (!invoice) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
-        if (invoice.pdfUrl) {
+        if (invoice.pdfUrl?.startsWith('data:application/pdf;base64,')) {
+            const base64 = invoice.pdfUrl.substring('data:application/pdf;base64,'.length);
+            const pdfBuffer = Buffer.from(base64, 'base64');
+            return new NextResponse(new Uint8Array(pdfBuffer), {
+                headers: {
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': `inline; filename="invoice-${invoice.invoiceNumber}.pdf"`,
+                },
+            });
+        }
+
+        if (invoice.pdfUrl && /^https?:\/\//i.test(invoice.pdfUrl)) {
             return NextResponse.redirect(new URL(invoice.pdfUrl));
         }
 
