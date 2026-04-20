@@ -85,6 +85,11 @@ export default function InvoicesPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [newClient, setNewClient] = useState({ name: '', email: '', phone: '', companyName: '' });
+  const [newClientError, setNewClientError] = useState<string | null>(null);
+  const [newClientLoading, setNewClientLoading] = useState(false);
+
   const [deleteConfirm, setDeleteConfirm] = useState<Invoice | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [pdfLoading, setPdfLoading] = useState<string | null>(null);
@@ -160,6 +165,55 @@ export default function InvoicesPage() {
   const closeModal = () => {
     setIsModalOpen(false);
     setFormError(null);
+  };
+
+  const openClientModal = () => {
+    setNewClient({ name: '', email: '', phone: '', companyName: '' });
+    setNewClientError(null);
+    setIsClientModalOpen(true);
+  };
+
+  const closeClientModal = () => {
+    setIsClientModalOpen(false);
+    setNewClientError(null);
+  };
+
+  const handleCreateClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setNewClientError(null);
+
+    const name = newClient.name.trim();
+    const email = newClient.email.trim();
+    if (!name || !email) {
+      setNewClientError('Name and email are required');
+      return;
+    }
+
+    setNewClientLoading(true);
+    try {
+      const res = await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          email,
+          phone: newClient.phone.trim() || undefined,
+          companyName: newClient.companyName.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create client');
+
+      const created = data.client as Client;
+      setClients((prev) => [{ id: created.id, name: created.name, email: created.email }, ...prev]);
+      setClientId(created.id);
+      closeClientModal();
+    } catch (err) {
+      setNewClientError(err instanceof Error ? err.message : 'Failed to create client');
+    } finally {
+      setNewClientLoading(false);
+    }
   };
 
   const addLineItem = () => {
@@ -668,9 +722,18 @@ export default function InvoicesPage() {
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Client <span className="text-red-500">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Client <span className="text-red-500">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={openClientModal}
+                        className="text-sm text-blue-600 hover:text-blue-800"
+                      >
+                        + New client
+                      </button>
+                    </div>
                     <select
                       value={clientId}
                       onChange={(e) => setClientId(e.target.value)}
@@ -827,6 +890,103 @@ export default function InvoicesPage() {
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                     )}
                     Create Invoice
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick add client modal */}
+      {isClientModalOpen && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4">
+            <div
+              className="fixed inset-0 bg-gray-500 bg-opacity-75"
+              onClick={closeClientModal}
+            />
+            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md">
+              <div className="flex justify-between items-center p-6 border-b">
+                <h3 className="text-lg font-semibold text-gray-900">Add New Client</h3>
+                <button onClick={closeClientModal} className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {newClientError && (
+                <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                  {newClientError}
+                </div>
+              )}
+
+              <form onSubmit={handleCreateClient} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newClient.name}
+                    onChange={(e) => setNewClient((prev) => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={newClient.email}
+                    onChange={(e) => setNewClient((prev) => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input
+                      type="tel"
+                      value={newClient.phone}
+                      onChange={(e) => setNewClient((prev) => ({ ...prev, phone: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <input
+                      type="text"
+                      value={newClient.companyName}
+                      onChange={(e) => setNewClient((prev) => ({ ...prev, companyName: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Need to add address, VAT number or notes? Edit the client later from the Clients page.
+                </p>
+                <div className="flex justify-end gap-3 pt-2 border-t">
+                  <button
+                    type="button"
+                    onClick={closeClientModal}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={newClientLoading}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {newClientLoading && (
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                    )}
+                    Save Client
                   </button>
                 </div>
               </form>
