@@ -321,3 +321,11 @@ button { white-space: nowrap; }
   .fb-sidebar-backdrop { display: none !important; }
   .fb-sidebar-close { display: none !important; }
 }
+
+/* Prevent page-level horizontal scroll on mobile. Any intentional
+   horizontal scrolling lives inside its own overflow-x-auto container. */
+@media (max-width: 767px) {
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  .fb-main { max-width: 100vw; overflow-x: hidden; }
+  .fb-main > * { min-width: 0; }
+}
