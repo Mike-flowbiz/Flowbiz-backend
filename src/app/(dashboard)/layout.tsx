@@ -250,22 +250,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(226,232,240,0.85)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</p>
                 <p style={{ fontSize: 11, color: 'rgba(226,232,240,0.4)', margin: 0 }}>{userRole}</p>
               </div>
-              <button
-                onClick={handleLogout}
-                title="Logout"
-                style={{
-                  color: 'rgba(226,232,240,0.35)', background: 'none', border: 'none',
-                  cursor: 'pointer', padding: 4, borderRadius: 6, flexShrink: 0,
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = '#f87171')}
-                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = 'rgba(226,232,240,0.35)')}
-              >
-                <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </button>
             </div>
+            <button
+              onClick={handleLogout}
+              style={{
+                marginTop: 10,
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '10px 12px',
+                borderRadius: 10,
+                background: 'rgba(239,68,68,0.08)',
+                border: '1px solid rgba(239,68,68,0.2)',
+                color: '#f87171',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.15s, border-color 0.15s',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.16)';
+                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.35)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)';
+                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.2)';
+              }}
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
 
