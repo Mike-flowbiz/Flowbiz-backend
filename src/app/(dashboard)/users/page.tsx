@@ -167,7 +167,7 @@ export default function UsersPage() {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 28 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', margin: '0 0 4px' }}>User Management</h1>
           <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.45)', margin: 0 }}>
@@ -199,19 +199,14 @@ export default function UsersPage() {
       )}
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, marginBottom: 24 }}>
         {(['ADMIN', 'CONTRACTOR', 'CLIENT'] as const).map(role => {
           const count = users.filter(u => u.role === role).length;
           const meta = ROLE_META[role];
           return (
-            <div key={role} style={{ ...card, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: meta.bg, border: `1px solid ${meta.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: meta.color }}>{count}</span>
-              </div>
-              <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: meta.color, margin: 0 }}>{meta.label}s</p>
-                <p style={{ fontSize: 12, color: 'rgba(226,232,240,0.4)', margin: 0 }}>{count === 1 ? '1 account' : `${count} accounts`}</p>
-              </div>
+            <div key={role} style={{ ...card, padding: '14px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 0, textAlign: 'center' }}>
+              <span style={{ fontSize: 26, fontWeight: 800, color: meta.color, lineHeight: 1 }}>{count}</span>
+              <p style={{ fontSize: 12, fontWeight: 600, color: meta.color, margin: 0 }}>{meta.label}s</p>
             </div>
           );
         })}

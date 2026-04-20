@@ -260,6 +260,9 @@ select option {
   background-size: 48px 48px;
 }
 
+/* Prevent all buttons from awkwardly wrapping their labels on narrow viewports */
+button { white-space: nowrap; }
+
 /* Responsive sidebar + mobile topbar (bulletproof, no Tailwind dep) */
 .fb-sidebar {
   transform: translateX(-100%);
