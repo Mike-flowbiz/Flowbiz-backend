@@ -259,3 +259,22 @@ select option {
     linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+/* Responsive sidebar + mobile topbar (bulletproof, no Tailwind dep) */
+.fb-sidebar {
+  transform: translateX(-100%);
+}
+.fb-sidebar.is-open {
+  transform: translateX(0);
+}
+.fb-mobile-topbar { display: flex; }
+.fb-main { padding-left: 0; }
+.fb-sidebar-backdrop { display: block; }
+
+@media (min-width: 768px) {
+  .fb-sidebar { transform: translateX(0) !important; }
+  .fb-mobile-topbar { display: none !important; }
+  .fb-main { padding-left: 256px; }
+  .fb-sidebar-backdrop { display: none !important; }
+  .fb-sidebar-close { display: none !important; }
+}

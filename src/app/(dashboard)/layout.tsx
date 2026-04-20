@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
@@ -107,6 +107,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
+
+  useEffect(() => { setSidebarOpen(false); }, [pathname]);
   const visibleNav = navigation.filter(item => !item.adminOnly || user?.role === 'ADMIN');
 
   const handleLogout = async () => {
@@ -126,23 +128,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
+            className="fb-sidebar-backdrop"
             style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 20 }}
-            className="lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* ── SIDEBAR ─────────────────────────────────────── */}
         <div
+          className={`fb-sidebar${sidebarOpen ? ' is-open' : ''}`}
           style={{
             position: 'fixed', top: 0, bottom: 0, left: 0, zIndex: 30, width: 256,
             background: '#080813',
             borderRight: '1px solid rgba(255,255,255,0.07)',
-            transform: sidebarOpen ? 'translateX(0)' : undefined,
             transition: 'transform 0.3s ease',
             display: 'flex', flexDirection: 'column',
           }}
-          className={`lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
           {/* Logo */}
           <div style={{
@@ -173,7 +174,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden"
+              className="fb-sidebar-close"
               style={{ color: 'rgba(226,232,240,0.4)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
             >
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,8 +289,58 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* ── MAIN CONTENT ─────────────────────────────────── */}
-        <div className="lg:pl-64">
-          
+        <div className="fb-main">
+          {/* Mobile top bar with hamburger */}
+          <div
+            className="fb-mobile-topbar"
+            style={{
+              position: 'sticky', top: 0, zIndex: 10,
+              height: 56, padding: '0 16px',
+              alignItems: 'center', gap: 12,
+              background: 'rgba(8,8,19,0.85)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(12px)',
+            }}
+          >
+            <button
+              aria-label="Open sidebar"
+              onClick={() => setSidebarOpen(true)}
+              style={{
+                width: 40, height: 40, borderRadius: 10,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'rgba(226,232,240,0.85)',
+                cursor: 'pointer',
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 0 14px rgba(139,92,246,0.4)',
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <polyline points="9 22 9 12 15 12 15 22" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span style={{
+                fontSize: 16, fontWeight: 700,
+                background: 'linear-gradient(90deg, #a78bfa, #60a5fa)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              }}>
+                FlowBiz
+              </span>
+            </div>
+          </div>
 
           {/* Page content with subtle grid */}
           <main className="fb-page-grid" style={{ padding: '28px 32px', minHeight: 'calc(100vh - 60px)' }}>
