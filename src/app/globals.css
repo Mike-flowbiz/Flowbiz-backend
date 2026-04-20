@@ -263,6 +263,46 @@ select option {
 /* Prevent all buttons from awkwardly wrapping their labels on narrow viewports */
 button { white-space: nowrap; }
 
+/* ── Invoice line-items responsive grid ────────────────────────────── */
+.fb-line-items-wrap > .fb-line-item + .fb-line-item {
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.fb-line-item {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  align-items: center;
+  grid-template-columns: minmax(140px, 2fr) minmax(160px, 3fr) 80px 100px 80px 36px;
+}
+.fb-line-head {
+  background: rgba(255,255,255,0.03);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(226,232,240,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.fb-line-amount { text-align: left; }
+
+@media (max-width: 767px) {
+  .fb-line-head { display: none; }
+  .fb-line-item {
+    grid-template-columns: 1fr 1fr 1fr 40px;
+    grid-template-areas:
+      "prod  prod  prod  prod"
+      "desc  desc  desc  desc"
+      "qty   price amt   del";
+    gap: 8px;
+    padding: 12px;
+  }
+  .fb-line-product { grid-area: prod; min-width: 0; }
+  .fb-line-desc    { grid-area: desc; min-width: 0; }
+  .fb-line-qty     { grid-area: qty;  min-width: 0; }
+  .fb-line-price   { grid-area: price; min-width: 0; }
+  .fb-line-amount  { grid-area: amt;  min-width: 0; text-align: right; align-self: center; padding-right: 4px; }
+  .fb-line-delete  { grid-area: del; justify-self: end; }
+}
+
 /* Responsive sidebar + mobile topbar (bulletproof, no Tailwind dep) */
 .fb-sidebar {
   transform: translateX(-100%);

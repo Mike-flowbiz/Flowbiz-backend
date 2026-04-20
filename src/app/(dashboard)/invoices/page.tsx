@@ -718,91 +718,78 @@ export default function InvoicesPage() {
                       + Add line
                     </button>
                   </div>
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Product</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Description *</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 w-24">Qty</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 w-28">Unit Price</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 w-24">Amount</th>
-                          <th className="px-3 py-2 w-10" />
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {lineItems.map((item) => {
-                          const q = parseFloat(item.quantity) || 0;
-                          const p = parseFloat(item.unitPrice) || 0;
-                          const amount = Math.round(q * p * 100) / 100;
-                          return (
-                            <tr key={item.tempId}>
-                              <td className="px-3 py-2">
-                                <select
-                                  value={item.productId}
-                                  onChange={(e) => {
-                                    const v = e.target.value;
-                                    updateLineItem(item.tempId, 'productId', v);
-                                    fillFromProduct(item.tempId, v);
-                                  }}
-                                  className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                >
-                                  <option value="">—</option>
-                                  {products.map((prod) => (
-                                    <option key={prod.id} value={prod.id}>
-                                      {prod.name} ({formatCurrency(prod.price)}/{prod.unit})
-                                    </option>
-                                  ))}
-                                </select>
-                              </td>
-                              <td className="px-3 py-2">
-                                <input
-                                  type="text"
-                                  value={item.description}
-                                  onChange={(e) => updateLineItem(item.tempId, 'description', e.target.value)}
-                                  className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                  placeholder="Description"
-                                  required
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={item.quantity}
-                                  onChange={(e) => updateLineItem(item.tempId, 'quantity', e.target.value)}
-                                  className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={item.unitPrice}
-                                  onChange={(e) => updateLineItem(item.tempId, 'unitPrice', e.target.value)}
-                                  className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                />
-                              </td>
-                              <td className="px-3 py-2 text-sm text-gray-700">{formatCurrency(amount)}</td>
-                              <td className="px-3 py-2">
-                                <button
-                                  type="button"
-                                  onClick={() => removeLineItem(item.tempId)}
-                                  className="text-red-500 hover:text-red-700"
-                                  disabled={lineItems.length === 1}
-                                >
-                                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                  <div className="fb-line-items-wrap border rounded-lg overflow-hidden">
+                    <div className="fb-line-item fb-line-head">
+                      <div className="fb-line-product">Product</div>
+                      <div className="fb-line-desc">Description *</div>
+                      <div className="fb-line-qty">Qty</div>
+                      <div className="fb-line-price">Unit Price</div>
+                      <div className="fb-line-amount">Amount</div>
+                      <div className="fb-line-delete" />
+                    </div>
+                    {lineItems.map((item) => {
+                      const q = parseFloat(item.quantity) || 0;
+                      const p = parseFloat(item.unitPrice) || 0;
+                      const amount = Math.round(q * p * 100) / 100;
+                      return (
+                        <div key={item.tempId} className="fb-line-item">
+                          <select
+                            className="fb-line-product px-2 py-1.5 border border-gray-300 rounded text-sm"
+                            value={item.productId}
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              updateLineItem(item.tempId, 'productId', v);
+                              fillFromProduct(item.tempId, v);
+                            }}
+                          >
+                            <option value="">Product</option>
+                            {products.map((prod) => (
+                              <option key={prod.id} value={prod.id}>
+                                {prod.name} ({formatCurrency(prod.price)}/{prod.unit})
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="text"
+                            className="fb-line-desc px-2 py-1.5 border border-gray-300 rounded text-sm"
+                            value={item.description}
+                            onChange={(e) => updateLineItem(item.tempId, 'description', e.target.value)}
+                            placeholder="Description"
+                            required
+                          />
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            className="fb-line-qty px-2 py-1.5 border border-gray-300 rounded text-sm"
+                            value={item.quantity}
+                            onChange={(e) => updateLineItem(item.tempId, 'quantity', e.target.value)}
+                            placeholder="Qty"
+                          />
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            className="fb-line-price px-2 py-1.5 border border-gray-300 rounded text-sm"
+                            value={item.unitPrice}
+                            onChange={(e) => updateLineItem(item.tempId, 'unitPrice', e.target.value)}
+                            placeholder="Unit Price"
+                          />
+                          <div className="fb-line-amount text-sm text-gray-700">{formatCurrency(amount)}</div>
+                          <button
+                            type="button"
+                            onClick={() => removeLineItem(item.tempId)}
+                            className="fb-line-delete text-red-500 hover:text-red-700"
+                            disabled={lineItems.length === 1}
+                            aria-label="Remove line"
+                          >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
