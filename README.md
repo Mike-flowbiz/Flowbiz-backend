@@ -126,17 +126,6 @@ Create a `.env` file with:
 ```env
 DATABASE_URL="your-postgresql-connection-string"
 JWT_SECRET="your-jwt-secret"
-AWS_ACCESS_KEY_ID=""
-AWS_SECRET_ACCESS_KEY=""
-AWS_REGION=""
-AWS_S3_BUCKET=""
-SMTP_HOST=""
-SMTP_PORT="587"
-SMTP_USER=""
-SMTP_PASS=""
-SMTP_FROM=""
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
 
 ### Run Development Servers
 
